@@ -149,3 +149,5 @@ class CompactCar extends Car
 }
 
 
+class SUV extends Car{}
+
