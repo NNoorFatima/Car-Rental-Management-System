@@ -3,6 +3,7 @@
  
  
 abstract class Renter {
+	private static int id_count=0;
 	private int rentID;
 	private String name;
 	private String email;
@@ -12,9 +13,9 @@ abstract class Renter {
 	private String address;
 	
 	//constructor 
-	public Renter(int id,String nm,String em,double rent_fee, String ph,String add)
+	public Renter(String nm,String em,double rent_fee, String ph,String add)
 	{
-		this.rentID=id;
+		this.rentID=id_count++;
 		this.name=nm;
 		this.email=em;
 		this.rentedCars= new ArrayList<>();
@@ -53,9 +54,9 @@ abstract class Renter {
 	}
 	//setters
 
-	public void setRentID(int rentID) {
+	/*public void setRentID(int rentID) {
 		this.rentID = rentID;
-	}
+	}*/
 
 	public void setName(String name) {
 		this.name = name;
@@ -100,9 +101,68 @@ abstract class Renter {
 
 class RegularRenter extends Renter 
 {
-	RegularRenter(int id,String nm,String em,double rent_fee, String ph,String add)
+	private final double discount=0;
+	RegularRenter(String nm,String em,double rent_fee, String ph,String add)
 	{
-		super(id,nm, em, rent_fee,  ph, add);
+		super(nm, em, rent_fee,  ph, add);
 	}
+	public double calculateRate(double amount)
+	{
+		
+		double amt= amount-(discount*amount);
+		return amt;
+	}
+	public void displayRenterDetails()
+	{
+		System.out.println("type: Regular Renter");
+		super.displayRenterDetails();
+		System.out.println("--------------------------------");
+	}
+	
+}
 
+
+class FrequentRenter extends Renter 
+{
+	private final double discount=0.10;
+	FrequentRenter(String nm,String em,double rent_fee, String ph,String add)
+	{
+		super(nm, em, rent_fee,  ph, add);
+	}
+	public double calculateRate(double amount)
+	{
+		
+		double amt= amount-(discount*amount);
+		return amt;
+	}
+	public void displayRenterDetails()
+	{
+		System.out.println("type: Frequent Renter");
+		super.displayRenterDetails();
+		System.out.println("--------------------------------");
+	}
+	
+}
+
+
+class CorporateRenter extends Renter 
+{
+	private final double discount=0.30;
+	CorporateRenter(String nm,String em,double rent_fee, String ph,String add)
+	{
+		super(nm, em, rent_fee,  ph, add);
+	}
+	public double calculateRate(double amount)
+	{
+		
+		double amt= amount-(discount*amount);
+		return amt;
+	}
+	public void displayRenterDetails()
+	{
+		System.out.println("type: Corporate Renter");
+		super.displayRenterDetails();
+		System.out.println("--------------------------------");
+	}
+	
 }
