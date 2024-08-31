@@ -103,8 +103,8 @@ abstract class Car {
 }
 
 
-//subclass
 
+//subclasses
 class CompactCar extends Car
 {
 	private static final double per_distance_cost =0.3;
@@ -114,8 +114,7 @@ class CompactCar extends Car
 	{
 		 super(b, m, y,Status,fee, p);
 	}
-	
-	
+
 	public void displayDetails()
 	{
 		
@@ -124,7 +123,7 @@ class CompactCar extends Car
         super.displayDetails();
         System.out.println("---------------------------");
 	}
-	
+
 	//implement logic
 	public double calculateRent(double distance)
 	{
@@ -148,5 +147,83 @@ class CompactCar extends Car
 	
 }
 
-//subclasses
+
+class SUV extends Car{
+	
+	private static final double per_distance_cost=0.5;
+	public static final int damage_percentage=10;
+	
+	public SUV(String b,String m, int y, String p, boolean Status,int fee)
+	{
+		super(b,m,y,Status,fee,p);
+	}
+	
+	public void displayDetails()
+	{
+		 System.out.println("Car Type: SUV Car");
+		 System.out.println("Features: Spacious, suitable for family trips.");
+		 super.displayDetails();
+		 System.out.println("---------------------------");
+		
+	}
+	
+	public double calculateRent(double distance)
+	{
+		double total_rent= getFee()+(per_distance_cost*distance);
+		return total_rent;
+	}
+
+	public double DamageCost()
+	{
+		
+		return 0;
+	}
+	
+	public boolean isInsurable()
+	{
+		return true;
+	}
+	
+	
+}
+
+
+class LuxuryCar extends Car{
+	
+	private static final double per_distance_cost=1.2;
+	public static final int damage_percentage=20;
+	public LuxuryCar(String b,String m, int y, String p, boolean Status,int fee)
+	{
+		super(b,m,y,Status,fee,p);
+	}
+
+	public void displayDetails()
+	{
+		 System.out.println("Car Type: Luxury Car");
+		 System.out.println("Features: High-end, suitable for special occasions.");
+		 super.displayDetails();
+		 System.out.println("---------------------------");
+		
+		
+	}
+	
+	public double calculateRent(double distance)
+	{
+		double total_rent= getFee()+(per_distance_cost*distance);
+		return total_rent;
+	}
+
+	public double DamageCost()
+	{
+		
+		return 0;
+	}
+	
+	public boolean isInsurable()
+	{
+		return true;
+	}
+	
+}
+
 
