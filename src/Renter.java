@@ -98,7 +98,7 @@ abstract class Renter {
 }
 	
 }
-
+//subclasses 
 class RegularRenter extends Renter 
 {
 	private final double discount=0;
