@@ -6,7 +6,7 @@ abstract class Car {
 	private String Brand;
 	private String model;
 	private int year;
-	private boolean rental_status;
+	private boolean rental_status; //if rented then the status is 1 else its 
 	private int rental_fee;
 	private String plate_no;
 	
