@@ -22,7 +22,7 @@ public class Main {
 				 System.out.println("1.Add new cars");
 				 System.out.println("2.Display available cars");
 				 System.out.println("3.Remove Car");
-				 System.out.println("4.Exit");
+				// System.out.println("4.Exit");
 				 System.out.println("Enter your choice:\n");
 				 int choice_1= sc.nextInt();
 				 if(choice_1==1)
@@ -98,26 +98,27 @@ public class Main {
 					 car_management.removeCar(id);
 				 }
 				 
+				 
 			 }
 			 else if (choice==2)
 			 {
 				 System.out.println("1.Add new renters");
 				 System.out.println("2.Display renter details");
 				 System.out.println("3.Remove renter");
-				 System.out.println("4.Exit");
+				// System.out.println("4.Exit");
 				 System.out.println("Enter your choice:\n");
 				 int choice_2= sc.nextInt();
 				 
 			 }
-			 else if(choice==3)
+			/* else if(choice==3)//transactions 
 			 {
 				 System.out.println("1.Add new renters");
 				 System.out.println("2.Display renter details");
 				 System.out.println("3.Remove renter");
-				 System.out.println("4.Exit");
+				// System.out.println("4.Exit");
 				 System.out.println("Enter your choice:\n");
 				 int choice_3= sc.nextInt();
-			 }
+			 }*/
 			 else if(choice==4)
 			 {
 				 break;
