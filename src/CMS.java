@@ -2,6 +2,7 @@ import java.util.*;
 public class CMS {
 	private List<Car> cars;
 	
+	
 	public CMS()
 	{
 		cars= new ArrayList<>();
@@ -48,6 +49,21 @@ public class CMS {
 		  	}
 
 	}
-	
+	public void carBasicDetails()
+	{
+		Iterator<Car> start= cars.iterator();
+		System.out.println("displaying all the available renters");
+		while(start.hasNext()==true)
+		{
+			Car a = start.next();
+			System.out.println("Car ID: "+a.getID());
+			System.out.println("Car Type: "+ a.displayCarType());
+			
+		
+		}
+	}
+	public List<Car> getCars() {
+		return cars;
+	}
 
 }

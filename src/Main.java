@@ -8,6 +8,8 @@ public class Main {
 		
 		 CMS car_management= new CMS();
 		 RMS renter_management= new RMS();
+		 Transactions rent_transactions= new Transactions(car_management,renter_management);
+		 
 		 while(true)
 		 {
 			 Scanner sc= new Scanner(System.in);
@@ -63,8 +65,10 @@ public class Main {
 						 String model = sc.nextLine();
 						 System.out.println("Enter year");
 						 int year= sc.nextInt();
+						 sc.nextLine(); 
 						 System.out.println("Enter rental fee");
 						 int fee= sc.nextInt();
+						 sc.nextLine(); 
 						 System.out.println("Enter plate number");
 						 String plate_no = sc.nextLine();
 						 Car car_type=new SUV(brand,model,year,plate_no,false,fee);
@@ -80,8 +84,10 @@ public class Main {
 						 String model = sc.nextLine();
 						 System.out.println("Enter year");
 						 int year= sc.nextInt();
+						 sc.nextLine(); 
 						 System.out.println("Enter rental fee");
 						 int fee= sc.nextInt();
+						 sc.nextLine(); 
 						 System.out.println("Enter plate number");
 						 String plate_no = sc.nextLine();
 						 Car car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
@@ -122,9 +128,9 @@ public class Main {
 						 System.out.println("Enter email");
 						 String email = sc.nextLine();
 	
-						 System.out.println("Enter total rent fee");
+						/* System.out.println("Enter total rent fee");
 						 double t_rental_fee = sc.nextInt();
-						 sc.nextLine(); // Consume the newline character
+						 sc.nextLine(); // Consume the newline character*/
 						 
 						 System.out.println("Enter phone number");
 						 String phone_no = sc.nextLine();
@@ -132,7 +138,7 @@ public class Main {
 						 System.out.println("Enter address");
 						 String add = sc.nextLine();
 	
-						 Renter renter_type = new RegularRenter(name,email,t_rental_fee,phone_no,add);
+						 Renter renter_type = new RegularRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
 					 else if(ch=='b')
@@ -144,9 +150,9 @@ public class Main {
 						 System.out.println("Enter email");
 						 String email = sc.nextLine();
 	
-						 System.out.println("Enter total rent fee");
+						 /*System.out.println("Enter total rent fee");
 						 double t_rental_fee = sc.nextInt();
-						 sc.nextLine(); // Consume the newline character
+						 sc.nextLine(); // Consume the newline character*/
 						 
 						 System.out.println("Enter phone number");
 						 String phone_no = sc.nextLine();
@@ -154,7 +160,7 @@ public class Main {
 						 System.out.println("Enter address");
 						 String add = sc.nextLine();
 	
-						 Renter renter_type = new FrequentRenter(name,email,t_rental_fee,phone_no,add);
+						 Renter renter_type = new FrequentRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
 					 else if(ch=='c')
@@ -166,9 +172,9 @@ public class Main {
 						 System.out.println("Enter email");
 						 String email = sc.nextLine();
 	
-						 System.out.println("Enter total rent fee");
+					/*	 System.out.println("Enter total rent fee");
 						 double t_rental_fee = sc.nextInt();
-						 sc.nextLine(); // Consume the newline character
+						 sc.nextLine();*/ // Consume the newline character
 						 
 						 System.out.println("Enter phone number");
 						 String phone_no = sc.nextLine();
@@ -176,7 +182,7 @@ public class Main {
 						 System.out.println("Enter address");
 						 String add = sc.nextLine();
 	
-						 Renter renter_type = new CorporateRenter(name,email,t_rental_fee,phone_no,add);
+						 Renter renter_type = new CorporateRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
 					 
@@ -193,15 +199,28 @@ public class Main {
 				 }
 				 
 			 }
-			/* else if(choice==3)//transactions 
+			 else if(choice==3)//transactions 
 			 {
-				 System.out.println("1.Add new renters");
-				 System.out.println("2.Display renter details");
-				 System.out.println("3.Remove renter");
+				 System.out.println("1.Rent a car");
+				 System.out.println("2.Display rental details");
+				 System.out.println("3.Total rental Cost");
 				// System.out.println("4.Exit");
 				 System.out.println("Enter your choice:\n");
 				 int choice_3= sc.nextInt();
-			 }*/
+				 if(choice_3==1)
+				 {
+					 rent_transactions.rentCar();
+					 
+				 }
+				 else if(choice_3==2)
+				 {
+					 rent_transactions.displayRentalDetails();
+				 }
+				 else if (choice_3==3)
+				 {
+					 rent_transactions.rentCalculation();
+				 }
+			 }
 			 else if(choice==4)
 			 {
 				 break;

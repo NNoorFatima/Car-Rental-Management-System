@@ -69,7 +69,19 @@ public class RMS {
 			}		
 		}
 	}
-	
+	public void renterBasicDetails()
+	{
+		Iterator<Renter> start= renters.iterator();
+		System.out.println("displaying all the available renters");
+		while(start.hasNext()==true)
+		{
+			Renter a = start.next();
+			System.out.println("Renter ID: "+a.getRentID());
+		}	
+	}
+	public List<Renter> getRenters() {
+		return renters;
+	}
 	
 	
 

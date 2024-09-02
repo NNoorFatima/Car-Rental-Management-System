@@ -98,7 +98,7 @@ abstract class Car {
         System.out.println("Rental Status: " + (rental_status ? "Rented" : "Available"));
         System.out.println("Rental Fee: $" + rental_fee);
     }
-	
+	public abstract String displayCarType();
 	
 }
 
@@ -143,6 +143,11 @@ class CompactCar extends Car
 	{
 		return false;
 	}
+	public String displayCarType()
+	{
+		String type="Compact Car";
+		return type;
+	}
 	
 	
 }
@@ -183,6 +188,11 @@ class SUV extends Car{
 	{
 		return true;
 	}
+	public String displayCarType()
+	{
+		String type="SUV Car";
+		return type;
+	}
 	
 	
 }
@@ -222,6 +232,12 @@ class LuxuryCar extends Car{
 	public boolean isInsurable()
 	{
 		return true;
+	}
+	
+	public String displayCarType()
+	{
+		String type="Luxury Car";
+		return type;
 	}
 	
 }

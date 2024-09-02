@@ -13,13 +13,13 @@ abstract class Renter {
 	private String address;
 	
 	//constructor 
-	public Renter(String nm,String em,double rent_fee, String ph,String add)
+	public Renter(String nm,String em, String ph,String add)
 	{
 		this.rentID=id_count++;
 		this.name=nm;
 		this.email=em;
 		this.rentedCars= new ArrayList<>();
-		this.total_rent_fee=rent_fee;
+		this.total_rent_fee=0;
 		this.ph_no=ph;
 		this.address=add;
 		
@@ -96,15 +96,17 @@ abstract class Renter {
         }
 	
 }
-	
+	public abstract double calculateRate(double amount);
+	public abstract String displayRenterType();
+
 }
 //subclasses 
 class RegularRenter extends Renter 
 {
 	private final double discount=0;
-	RegularRenter(String nm,String em,double rent_fee, String ph,String add)
+	RegularRenter(String nm,String em, String ph,String add)
 	{
-		super(nm, em, rent_fee,  ph, add);
+		super(nm, em,  ph, add);
 	}
 	public double calculateRate(double amount)
 	{
@@ -118,16 +120,21 @@ class RegularRenter extends Renter
 		super.displayRenterDetails();
 		System.out.println("--------------------------------");
 	}
-	
+	public String displayRenterType()
+	{
+        String type="Regular Renter";
+        return type;
+
+	}
 }
 
 
 class FrequentRenter extends Renter 
 {
 	private final double discount=0.10;
-	FrequentRenter(String nm,String em,double rent_fee, String ph,String add)
+	FrequentRenter(String nm,String em, String ph,String add)
 	{
-		super(nm, em, rent_fee,  ph, add);
+		super(nm, em,  ph, add);
 	}
 	public double calculateRate(double amount)
 	{
@@ -142,15 +149,21 @@ class FrequentRenter extends Renter
 		System.out.println("--------------------------------");
 	}
 	
+	public String displayRenterType()
+	{
+        String type="Frequent Renter";
+        return type;
+
+	}
 }
 
 
 class CorporateRenter extends Renter 
 {
 	private final double discount=0.30;
-	CorporateRenter(String nm,String em,double rent_fee, String ph,String add)
+	CorporateRenter(String nm,String em, String ph,String add)
 	{
-		super(nm, em, rent_fee,  ph, add);
+		super(nm, em,  ph, add);
 	}
 	public double calculateRate(double amount)
 	{
@@ -164,5 +177,10 @@ class CorporateRenter extends Renter
 		super.displayRenterDetails();
 		System.out.println("--------------------------------");
 	}
-	
+	public String displayRenterType()
+	{
+        String type="Corporate Renter";
+        return type;
+
+	}
 }
