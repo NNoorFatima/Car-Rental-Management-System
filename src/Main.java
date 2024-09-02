@@ -7,6 +7,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		
 		 CMS car_management= new CMS();
+		 RMS renter_management= new RMS();
 		 while(true)
 		 {
 			 Scanner sc= new Scanner(System.in);
@@ -108,6 +109,88 @@ public class Main {
 				// System.out.println("4.Exit");
 				 System.out.println("Enter your choice:\n");
 				 int choice_2= sc.nextInt();
+				 if(choice_2==1)
+				 {
+					 System.out.println("Enter if its\n a.Regular Renter\n b.Frequent Renter \n c.Corporate Renter ");
+					 char ch= sc.next().charAt(0);
+					 if(ch=='a')
+					 {
+						 sc.nextLine();
+						 System.out.println("Enter name");
+						 String name = sc.nextLine();
+	
+						 System.out.println("Enter email");
+						 String email = sc.nextLine();
+	
+						 System.out.println("Enter total rent fee");
+						 double t_rental_fee = sc.nextInt();
+						 sc.nextLine(); // Consume the newline character
+						 
+						 System.out.println("Enter phone number");
+						 String phone_no = sc.nextLine();
+						 
+						 System.out.println("Enter address");
+						 String add = sc.nextLine();
+	
+						 Renter renter_type = new RegularRenter(name,email,t_rental_fee,phone_no,add);
+						 renter_management.addRenters(renter_type);
+					 }
+					 else if(ch=='b')
+					 {
+						 sc.nextLine();
+						 System.out.println("Enter name");
+						 String name = sc.nextLine();
+	
+						 System.out.println("Enter email");
+						 String email = sc.nextLine();
+	
+						 System.out.println("Enter total rent fee");
+						 double t_rental_fee = sc.nextInt();
+						 sc.nextLine(); // Consume the newline character
+						 
+						 System.out.println("Enter phone number");
+						 String phone_no = sc.nextLine();
+						 
+						 System.out.println("Enter address");
+						 String add = sc.nextLine();
+	
+						 Renter renter_type = new FrequentRenter(name,email,t_rental_fee,phone_no,add);
+						 renter_management.addRenters(renter_type);
+					 }
+					 else if(ch=='c')
+					 {
+						 sc.nextLine();
+						 System.out.println("Enter name");
+						 String name = sc.nextLine();
+	
+						 System.out.println("Enter email");
+						 String email = sc.nextLine();
+	
+						 System.out.println("Enter total rent fee");
+						 double t_rental_fee = sc.nextInt();
+						 sc.nextLine(); // Consume the newline character
+						 
+						 System.out.println("Enter phone number");
+						 String phone_no = sc.nextLine();
+						 
+						 System.out.println("Enter address");
+						 String add = sc.nextLine();
+	
+						 Renter renter_type = new CorporateRenter(name,email,t_rental_fee,phone_no,add);
+						 renter_management.addRenters(renter_type);
+					 }
+					 
+				 }
+				 else if(choice_2==2)
+				 {
+					 renter_management.displayRenter();
+				 }
+				 else if(choice_2==3)
+				 {
+					 System.out.println("Enter the id of the car you want to remove");
+					 int id= sc.nextInt();
+					 renter_management.removeRenter(id);
+				 }
 				 
 			 }
 			/* else if(choice==3)//transactions 

@@ -29,28 +29,24 @@ public class CMS {
 	}
 	public void removeCar(int ID)
 	{
-		int index=0;
 		
-		for (Car a: cars)
-		{
-			//remove car if its not rented and if it exists 
-			if(a.getID()==ID && a.getStatus()==false)
-			{
-				cars.remove(index);
-			}
-			else if( a.getStatus()!=false)
-			{
-				System.out.println("Sorry the car has been rented so can't remove");
-			}
-			else
-			{
-				System.out.println("Sorry unable to perform operation");
-			}
-			index++;
-		}
-		
-		
-		
+		  Iterator<Car> start = cars.iterator();
+		  while (start.hasNext())
+		  {
+		        Car a = start.next();
+		        
+		        if (a.getStatus() == false) 
+		        { // Check if the renter's ID matches the given ID
+		                
+		          start.remove(); // Safely remove the renter using the iterator
+		          System.out.println("Car has been removed.");
+		        }
+		        else 
+		        {
+		                System.out.println("Sorry, this car has been rented.");
+		        }    
+		  	}
+
 	}
 	
 

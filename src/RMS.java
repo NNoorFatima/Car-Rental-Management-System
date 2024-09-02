@@ -26,47 +26,47 @@ public class RMS {
 	}
 	public void removeRenter(int ID) //removing renters using specific id 
 	{
-		int index=0;
-		for (Renter a: renters)
+		Iterator<Renter> start= renters.iterator();
+		
+		while(start.hasNext()==true)
 		{
-			//remove renter if no cars are rented 
-			if(a.getRentedCars()==null)
+			Renter a = start.next();
+			if(a.getRentID()==ID)
 			{
-				renters.remove(index);
+				List<Car> cars= a.getRentedCars();
+				if(cars.isEmpty())
+				{
+					start.remove();
+					System.out.println("Renter removed");
+				}
+				else if(cars.isEmpty()!= true)
+				{
+					System.out.println("Sorry the renter has rented cars");
+				}
+				
+			
 			}
-			else if( a.getRentedCars()!=null)
-			{
-				System.out.println("Sorry this renter has rented cars so can't remove them");
-			}
-			else
-			{
-				System.out.println("Sorry id is not available");
-			}
-			index++;
-		}
+		}		
 		
 	}
 	public void removeRenter()
 	{
+		Iterator<Renter> start= renters.iterator();
 		
-
-		int index=0;
-		for (Renter a: renters)
+		while(start.hasNext()==true)
 		{
-			//remove renter if no cars are rented 
-			if(a.getRentedCars()==null)
+			Renter a = start.next();
+		
+			List<Car> cars= a.getRentedCars();
+			if(cars.isEmpty())
 			{
-				renters.remove(index);
+				start.remove();
+				System.out.println("Renter removed");
 			}
-			else if( a.getRentedCars()!=null)
+			else if(cars.isEmpty()!= true)
 			{
-				System.out.println("Sorry this renter has rented cars so can't remove them");
-			}
-			else
-			{
-				System.out.println("Sorry id is not available");
-			}
-			index++;
+				System.out.println("Sorry the renter has rented cars");
+			}		
 		}
 	}
 	
