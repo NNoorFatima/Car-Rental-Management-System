@@ -137,7 +137,8 @@ class CompactCar extends Car
 	/////////////
 	public double DamageCost(double amt)
 	{
-		double damage_cost= amt *  (damage_percentage/100);
+		//double a= (damage_percentage/100);
+		double damage_cost= amt *  (damage_percentage/100.0);
 		return damage_cost;
 	}
 
@@ -187,7 +188,7 @@ class SUV extends Car{
 
 	public double DamageCost(double amt)
 	{
-		double damage_cost= amt *  (damage_percentage/100);
+		double damage_cost= amt *  (damage_percentage/100.0);
 		return damage_cost;
 	}
 	
@@ -238,7 +239,7 @@ class LuxuryCar extends Car{
 
 	public double DamageCost(double amt )
 	{
-		double damage_cost= amt *  (damage_percentage/100);
+		double damage_cost= amt *  (damage_percentage/100.0);
 		return damage_cost;
 	}
 	

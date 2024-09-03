@@ -36,13 +36,14 @@ public class CMS {
 		  {
 		        Car a = start.next();
 		        
-		        if (a.getStatus() == false) 
+		       // if (a.getStatus() == false) 
+		        if(a.getID()==ID)
 		        { // Check if the renter's ID matches the given ID
 		                
 		          start.remove(); // Safely remove the renter using the iterator
 		          System.out.println("Car has been removed.");
 		        }
-		        else 
+		        else if(a.getID()==ID && a.getStatus()==true)
 		        {
 		                System.out.println("Sorry, this car has been rented.");
 		        }    

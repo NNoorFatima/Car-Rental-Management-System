@@ -198,5 +198,20 @@ public class CRMS {
 			}
 		}
 	}
+	public static int getId_count() {
+		return id_count;
+	}
+	public int getTrans_ID() {
+		return trans_ID;
+	}
+	public CMS getCar_management() {
+		return car_management;
+	}
+	public RMS getRenter_management() {
+		return renter_management;
+	}
+	public List<rental_transaction> getTransactions() {
+		return transactions;
+	}
 
 }
