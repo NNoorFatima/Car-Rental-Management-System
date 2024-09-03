@@ -15,7 +15,6 @@ public class Transactions {
 //		trans_ID=id_count++;
 	}
 	//rent car to renter 
-	
 	public void rentCar()
 	{
 		Scanner input= new Scanner(System.in);
@@ -78,7 +77,6 @@ public class Transactions {
 		
 	}
 	//rental details
-	
 	public void displayRentalDetails()
 	{
 		Iterator<rental_transaction> start= transactions.iterator();
@@ -142,9 +140,20 @@ public class Transactions {
 	}
 	
 	//damage cost
-	public void calculateDamageCost()
+	public double calculateDamageCost(Renter a, Car b)
 	{
-		
+		Scanner input=new Scanner(System.in);
+		System.out.println("Enter the distance you have travelled");
+		int distance=input.nextInt();
+		double car_fee=b.calculateRent(distance);
+		double total_rental_cost=a.calculateRate(car_fee);
+		if(b.isInsurable())
+		{
+			total_rental_cost+=b.insuranceCost();
+		}
+		double damage_cost =b.DamageCost(total_rental_cost);
+		 
+		return damage_cost;
 		
 	}
 	//return car 
@@ -153,7 +162,6 @@ public class Transactions {
 		Scanner input=new Scanner(System.in);
 		for(Renter a :renter_management.getRenters() )
 		{
-			
 			if(a.getRentID()==renter_id)
 			{
 				for(Car b: a.getRentedCars())
@@ -167,17 +175,21 @@ public class Transactions {
 						String ans=input.nextLine();
 						if(ans=="Yes" || ans=="yes")
 						{
-							
-//							calculateDamageCost(b);
+							double damage_cost=calculateDamageCost(a,b);
 							//calculate damage cost 
 							if(b.isInsurable())
 							{
 								//cost if insurable 
+								damage_cost-=b.insuranceCost();
+								System.out.println("This "+ b.displayCarType()+ " was insurable,damage cost is " + damage_cost);
+								System.out.println("-------------------------------------------------------");
 								
 							}
 							else
 							{
 								//cost if not insurable 
+								System.out.println("This "+ b.displayCarType()+ " was not insurable,damage cost is " + damage_cost);
+								System.out.println("-------------------------------------------------------");
 							}
 						}
 						

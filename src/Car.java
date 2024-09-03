@@ -88,7 +88,7 @@ abstract class Car {
 	//abstract methods
 	public abstract double calculateRent(double distance);
 	
-	//public abstract double DamageCost();
+	public abstract double DamageCost(double a);
     public void displayDetails() {
         System.out.println("Car ID: " + carID);
         System.out.println("Brand: " + Brand);
@@ -134,12 +134,12 @@ class CompactCar extends Car
 		
 		return rent_cost;
 	}
-	///////////////
-//	public double DamageCost()
-//	{
-//		
-//		return 0;
-//	}
+	/////////////
+	public double DamageCost(double amt)
+	{
+		double damage_cost= amt *  (damage_percentage/100);
+		return damage_cost;
+	}
 
 	public boolean isInsurable()
 	{
@@ -185,11 +185,11 @@ class SUV extends Car{
 		return total_rent;
 	}
 
-//	public double DamageCost()
-//	{
-//		
-//		return 0;
-//	}
+	public double DamageCost(double amt)
+	{
+		double damage_cost= amt *  (damage_percentage/100);
+		return damage_cost;
+	}
 	
 	public boolean isInsurable()
 	{
@@ -236,11 +236,11 @@ class LuxuryCar extends Car{
 		return total_rent;
 	}
 
-//	public double DamageCost()
-//	{
-//		
-//		return 0;
-//	}
+	public double DamageCost(double amt )
+	{
+		double damage_cost= amt *  (damage_percentage/100);
+		return damage_cost;
+	}
 	
 	public boolean isInsurable()
 	{

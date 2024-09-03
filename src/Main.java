@@ -204,13 +204,13 @@ public class Main {
 				 System.out.println("1.Rent a car");
 				 System.out.println("2.Display rental details");
 				 System.out.println("3.Total rental Cost");
-				// System.out.println("4.Exit");
+				 System.out.println("4.Cost with insurance");
+				 System.out.println("5.Return Car {with damage cost}");
 				 System.out.println("Enter your choice:\n");
 				 int choice_3= sc.nextInt();
 				 if(choice_3==1)
 				 {
 					 rent_transactions.rentCar();
-					 
 				 }
 				 else if(choice_3==2)
 				 {
@@ -219,6 +219,18 @@ public class Main {
 				 else if (choice_3==3)
 				 {
 					 rent_transactions.rentCalculation();
+				 }
+				 else if(choice_3==4)
+				 {
+					 rent_transactions.costWithInsurance();
+				 }
+				 else if(choice_3==5)
+				 {
+					 System.out.println("Enter your renter id");
+					 int renter_id= sc.nextInt();
+					 System.out.println("Enter the id of the car you want to return");
+					 int car_id= sc.nextInt();
+					 rent_transactions.returnCar(renter_id, car_id);
 				 }
 			 }
 			 else if(choice==4)
