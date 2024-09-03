@@ -8,7 +8,7 @@ public class Main {
 		
 		 CMS car_management= new CMS();
 		 RMS renter_management= new RMS();
-		 Transactions rent_transactions= new Transactions(car_management,renter_management);
+		 CRMS rent_transactions= new CRMS(car_management,renter_management);
 		 
 		 while(true)
 		 {

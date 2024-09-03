@@ -1,13 +1,13 @@
 
 import java.util.*;
-public class Transactions {
+public class CRMS {
 	private static int id_count=1;
 	private int trans_ID;
 	private CMS car_management;
 	private RMS renter_management;
 	private List<rental_transaction> transactions;
 
-	Transactions(CMS a,RMS b)
+	CRMS(CMS a,RMS b)
 	{
 		this.car_management=a;
 		this.renter_management=b;
