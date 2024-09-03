@@ -88,7 +88,7 @@ abstract class Car {
 	//abstract methods
 	public abstract double calculateRent(double distance);
 	
-	public abstract double DamageCost();
+	//public abstract double DamageCost();
     public void displayDetails() {
         System.out.println("Car ID: " + carID);
         System.out.println("Brand: " + Brand);
@@ -99,7 +99,8 @@ abstract class Car {
         System.out.println("Rental Fee: $" + rental_fee);
     }
 	public abstract String displayCarType();
-	
+	public abstract boolean isInsurable();
+	public abstract int insuranceCost();	
 }
 
 
@@ -109,7 +110,8 @@ class CompactCar extends Car
 {
 	private static final double per_distance_cost =0.3;
 	private static final int damage_percentage=5;
-	
+	public static final int insurance_cost=0;
+
 	public CompactCar(String b, String m, int y, String p,boolean Status,int fee)
 	{
 		 super(b, m, y,Status,fee, p);
@@ -133,15 +135,20 @@ class CompactCar extends Car
 		return rent_cost;
 	}
 	///////////////
-	public double DamageCost()
-	{
-		
-		return 0;
-	}
+//	public double DamageCost()
+//	{
+//		
+//		return 0;
+//	}
 
 	public boolean isInsurable()
 	{
 		return false;
+	}
+	
+	public int insuranceCost()
+	{
+		return insurance_cost;
 	}
 	public String displayCarType()
 	{
@@ -157,7 +164,7 @@ class SUV extends Car{
 	
 	private static final double per_distance_cost=0.5;
 	public static final int damage_percentage=10;
-	
+	public static final int insurance_cost=30;
 	public SUV(String b,String m, int y, String p, boolean Status,int fee)
 	{
 		super(b,m,y,Status,fee,p);
@@ -178,15 +185,20 @@ class SUV extends Car{
 		return total_rent;
 	}
 
-	public double DamageCost()
-	{
-		
-		return 0;
-	}
+//	public double DamageCost()
+//	{
+//		
+//		return 0;
+//	}
 	
 	public boolean isInsurable()
 	{
 		return true;
+	}
+	
+	public int insuranceCost()
+	{
+		return insurance_cost;
 	}
 	public String displayCarType()
 	{
@@ -202,6 +214,7 @@ class LuxuryCar extends Car{
 	
 	private static final double per_distance_cost=1.2;
 	public static final int damage_percentage=20;
+	public static final int insurance_cost=40; 
 	public LuxuryCar(String b,String m, int y, String p, boolean Status,int fee)
 	{
 		super(b,m,y,Status,fee,p);
@@ -223,17 +236,21 @@ class LuxuryCar extends Car{
 		return total_rent;
 	}
 
-	public double DamageCost()
-	{
-		
-		return 0;
-	}
+//	public double DamageCost()
+//	{
+//		
+//		return 0;
+//	}
 	
 	public boolean isInsurable()
 	{
 		return true;
 	}
 	
+	public int insuranceCost()
+	{
+		return insurance_cost;
+	}
 	public String displayCarType()
 	{
 		String type="Luxury Car";

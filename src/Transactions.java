@@ -94,6 +94,31 @@ public class Transactions {
 	public void rentCalculation()
 	{
 		Scanner input=new Scanner(System.in);
+		double total_cost_renter=0;
+		for(Renter a :renter_management.getRenters() )
+		{
+			total_cost_renter=0;
+			for(Car b: a.getRentedCars())
+			{
+				System.out.println("Enter the distance you have travelled");
+				int distance=input.nextInt();
+				double car_fee=b.calculateRent(distance);
+				double total_rental_cost=a.calculateRate(car_fee);
+				total_cost_renter+=total_rental_cost;
+				System.out.println("the total rental cost of "+b.displayCarType()+" rented by " + a.getName() + " is "+ total_rental_cost);
+			}
+			a.setTotal_rent_fee(total_cost_renter);
+			System.out.println("The total rental cost for renter ID: "+ a.getRentID() +" is "+ total_cost_renter);
+			System.out.println("---------------------------------------------------------------------");
+		}
+	
+		
+	}
+	//add insurance option, if insurable 
+	//cost with insurance 
+	public void costWithInsurance()
+	{
+		Scanner input=new Scanner(System.in);
 		for(Renter a :renter_management.getRenters() )
 		{
 			for(Car b: a.getRentedCars())
@@ -102,32 +127,64 @@ public class Transactions {
 				int distance=input.nextInt();
 				double car_fee=b.calculateRent(distance);
 				double total_rental_cost=a.calculateRate(car_fee);
-				System.out.println("the total rental cost of "+b.displayCarType()+" rented by " + a.getName() + " is "+ total_rental_cost);
+				//check if the car is insurable 
+				//if yes add in total rent 
+				if(b.isInsurable())
+				{
+					total_rental_cost+=b.insuranceCost();
+					System.out.println("the total rental cost of "+b.displayCarType()+"{insurable} rented by " + a.getName() + " is "+ total_rental_cost);
+				}
+				else 
+					System.out.println("the total rental cost of "+b.displayCarType()+" {not insurable} rented by " + a.getName() + " is "+ total_rental_cost);
 
 			}
-			
 		}
-		
-		
-		
-		
-		
-//		Iterator<Car> start= cars.iterator();
-//		System.out.println("displaying all the available renters");
-//		while(start.hasNext()==true)
-//		{
-//			Car a = start.next();
-//			System.out.println("Car ID: "+a.getID());
-//			System.out.println("Car Type: "+ a.displayCarType());
-//			
-//		
-//		}
-		
 	}
-	//add insurance option, if insurable 
-	
-	//cost with insurance 
 	
 	//damage cost
+	public void calculateDamageCost()
+	{
+		
+		
+	}
+	//return car 
+	public void returnCar(int renter_id,int car_id)
+	{
+		Scanner input=new Scanner(System.in);
+		for(Renter a :renter_management.getRenters() )
+		{
+			
+			if(a.getRentID()==renter_id)
+			{
+				for(Car b: a.getRentedCars())
+				{
+					if(b.getID()==car_id)
+					{
+						System.out.println("Returning Car");
+						//make car available for other renters 
+						b.setStatus(false);
+						System.out.println("Is car damaged:");
+						String ans=input.nextLine();
+						if(ans=="Yes" || ans=="yes")
+						{
+							
+//							calculateDamageCost(b);
+							//calculate damage cost 
+							if(b.isInsurable())
+							{
+								//cost if insurable 
+								
+							}
+							else
+							{
+								//cost if not insurable 
+							}
+						}
+						
+					}
+				}
+			}
+		}
+	}
 
 }
