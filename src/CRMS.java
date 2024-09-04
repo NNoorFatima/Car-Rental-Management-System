@@ -106,7 +106,7 @@ public class CRMS {
 				System.out.println("the total rental cost of "+b.displayCarType()+" rented by " + a.getName() + " is "+ total_rental_cost);
 			}
 			a.setTotal_rent_fee(total_cost_renter);
-			System.out.println("The total rental cost for renter ID: "+ a.getRentID() +" is "+ total_cost_renter);
+			System.out.println("The total rental cost {for all cars in list} for renter ID: "+ a.getRentID() +" is "+ total_cost_renter);
 			System.out.println("---------------------------------------------------------------------");
 		}
 	

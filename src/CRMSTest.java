@@ -3,8 +3,8 @@ import org.junit.jupiter.api.BeforeEach;
 import java.io.ByteArrayInputStream;
 
 import org.junit.jupiter.api.Test;
-
-class CRMSTest {
+import java.util.*
+;class CRMSTest {
 
 	private CMS carManagementMock;
     private RMS renterManagementMock;
@@ -32,8 +32,10 @@ class CRMSTest {
         Renter renter_2 = new CorporateRenter("tabidah","tabidah.email.com","059011112","F10");
         renterManagementMock.addRenters(renter_2);
         
+       
         
         
+
     }
 	@Test
 	void testCRMS() {
@@ -50,45 +52,62 @@ class CRMSTest {
 
 	 
 	
-//	@Test
-//	void testRentCar() {
-//		 String simulatedInput = "0\n2\n"; // Simulate renter ID 1 and car ID 2
-//	     System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
-//	     crms.rentCar();
-//	     Car rentedCar = carManagementMock.getCars().get(0); // Toyota Corolla (car ID 2)
-//	     assertTrue(rentedCar.getStatus());
-//	     Renter renter = renterManagementMock.getRenters().get(0); // Noor (renter ID 1)
-//	     assertTrue(renter.getRentedCars().contains(rentedCar), "Rented car should be in the renter's list");
-//	     // Verify that the transaction is recorded correctly
-//	     assertEquals(1, crms.getTransactions().size(), "There should be one transaction");
-//	     rental_transaction transaction = crms.getTransactions().get(0);
-//	     assertEquals(0, transaction.getCarId());
-//	     assertEquals(0, transaction.getRenterId());
-//	}
+	@Test
+	void testRentCar() {
+		 String simulatedInput = "3\n3\n"; // Simulate renter ID 1 and car ID 2
+	     System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+	     crms.rentCar();
+	     Car rentedCar = carManagementMock.getCars().get(0); // Toyota Corolla (car ID 2)
+	     assertTrue(rentedCar.getStatus());
+	     Renter renter = renterManagementMock.getRenters().get(0); // Noor (renter ID 1)
+	     assertTrue(renter.getRentedCars().contains(rentedCar), "Rented car should be in the renter's list");
+	     // Verify that the transaction is recorded correctly
+	     assertEquals(1, crms.getTransactions().size(), "There should be one transaction");
+	     rental_transaction transaction = crms.getTransactions().get(0);
+	     assertEquals(3, transaction.getCarId());
+	     assertEquals(3, transaction.getRenterId());
+	}
 
-//	@Test
-//	void testDisplayRentalDetails() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testRentCalculation() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testCostWithInsurance() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testCalculateDamageCost() {
-//		fail("Not yet implemented");
-//	}
 
-//	@Test
-//	void testReturnCar() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	void testRentCalculation() {
+      List<Car> list= new ArrayList<>();
+      list.add(crms.getCar_management().getCars().get(1));
+      
+      crms.getRenter_management().getRenters().get(2).setRentedCars(list);
+     // renter_2.setRentedCars(list); // renter with id 6 rented car with id 4	
+      crms.getCar_management().getCars().get(1).setStatus(true);
+      
+		
+		System.out.println("\n\n----------This is the test for rent calculation--------------");
+		 // Simulate input for distances travelled for each car
+        String simulatedInput = "100\n"; // Distances for each car rented by the renters
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+        double expectedValue_1=126.0;
+        crms.rentCalculation();
+        assertEquals(expectedValue_1,crms.getRenter_management().getRenters().get(2).getTotal_rent_fee());
+        simulatedInput = "200\n"; // Distances for each car rented by the renters
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+        crms.rentCalculation();
+        double expectedValue_2=210.0;
+        assertEquals(expectedValue_2,crms.getRenter_management().getRenters().get(2).getTotal_rent_fee());
+       
+	}
+
+	
+
+	@Test
+	void testReturnCar() {
+		System.out.println("\n\n-------------this is return car test case-------------\n");
+		 String simulatedInput = "3\n3\n"; // Stored at index 0
+	     System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+	     crms.rentCar();
+	     System.out.println("\n\n");
+		 crms.displayRentalDetails();
+	     System.out.println("\n\n");
+
+	     
+
+	}
 
 }
