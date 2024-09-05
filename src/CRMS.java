@@ -89,6 +89,7 @@ public class CRMS {
 	}
 	
 	//total rent cost
+	
 	public void rentCalculation()
 	{
 		Scanner input=new Scanner(System.in);

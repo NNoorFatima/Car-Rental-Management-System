@@ -1,7 +1,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import java.io.ByteArrayInputStream;
-
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import java.util.*
 ;class CRMSTest {
@@ -54,18 +54,19 @@ import java.util.*
 	
 	@Test
 	void testRentCar() {
-		 String simulatedInput = "3\n3\n"; // Simulate renter ID 1 and car ID 2
+		 String simulatedInput = "10\n10\n"; // Simulate renter ID 1 and car ID 2
 	     System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
 	     crms.rentCar();
-	     Car rentedCar = carManagementMock.getCars().get(0); // Toyota Corolla (car ID 2)
+	    // Car rentedCar = carManagementMock.getCars().get(0); // Toyota Corolla (car ID 2)
+	     Car rentedCar= crms.getCar_management().getCars().get(0);
 	     assertTrue(rentedCar.getStatus());
 	     Renter renter = renterManagementMock.getRenters().get(0); // Noor (renter ID 1)
 	     assertTrue(renter.getRentedCars().contains(rentedCar), "Rented car should be in the renter's list");
 	     // Verify that the transaction is recorded correctly
 	     assertEquals(1, crms.getTransactions().size(), "There should be one transaction");
 	     rental_transaction transaction = crms.getTransactions().get(0);
-	     assertEquals(3, transaction.getCarId());
-	     assertEquals(3, transaction.getRenterId());
+	     assertEquals(10, transaction.getCarId());
+	     assertEquals(10, transaction.getRenterId());
 	}
 
 
@@ -95,19 +96,52 @@ import java.util.*
 	}
 
 	
-
+	
 	@Test
 	void testReturnCar() {
 		System.out.println("\n\n-------------this is return car test case-------------\n");
-		 String simulatedInput = "3\n3\n"; // Stored at index 0
-	     System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
-	     crms.rentCar();
-	     System.out.println("\n\n");
-		 crms.displayRentalDetails();
-	     System.out.println("\n\n");
+		String simulatedInput; 
+	    //rent car simulation 
+		List<Car> list= new ArrayList<>();
+		list.add(crms.getCar_management().getCars().get(1));
+	      
+		crms.getRenter_management().getRenters().get(1).setRentedCars(list);
+	     // renter_2.setRentedCars(list); // renter with id 6 rented car with id 4	
+		crms.getCar_management().getCars().get(1).setStatus(true);
+	     
+		simulatedInput = "yes\n"; 
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		crms.returnCar(8, 8);
+	     
+		boolean status= crms.getCar_management().getCars().get(1).getStatus();
+		assertFalse(status);
 
 	     
 
 	}
+	
+	
+	@Test
+	void testcalculateDamageCost()
+	{
+		CRMS newcrms;
+		CMS newcar=new CMS();
+		RMS newrenter= new RMS();
+		newcrms=new CRMS(newcar,newrenter);
+		
+		
+		Renter new_renter= new FrequentRenter("Umema","Umema.email.com","059778812","F11");
+		Car new_car= new SUV("Honda","City",2018,"lsc-123",false,90);
+		newcar.addCars(new_car);
+		newrenter.addRenters(new_renter);
+		
+		double expectedCost=15.6;
+		String simulatedInput;
+		simulatedInput = "100\n"; 
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		double actualCost= newcrms.calculateDamageCost(new_renter, new_car);
+		assertEquals(expectedCost,actualCost,0.0001);
+	}
+
 
 }
