@@ -12,8 +12,30 @@ public class Main {
 		 //main menu
 		 while(true)
 		 {
+			 //choose db storage method 
+			 System.out.println("Choose your storage method,enter (1-3):");
+			 System.out.println("1. File-based Storage");
+			 System.out.println("2. SQL-based Storage");
+			 System.out.println("3. Oracle Storage");
+			 //validation 
+			 Scanner sc1 = new Scanner(System.in);
+		     int storage = 0;
+			 do {
+		            System.out.print("Enter your choice (1-3): ");
+		            while (!sc1.hasNextInt()) {  // Check if input is an integer
+		                System.out.println("Invalid input. Please enter a number between 1 and 3.");
+		                sc1.next();  // Discard invalid input
+		            }
+		            storage = sc1.nextInt(); // Read user input
+	
+		            if (storage < 1 || storage > 3) {
+		                System.out.println("Invalid choice. Please select a valid option (1-3).");
+		            }
+		        }while (storage < 1 || storage > 3); // Loop until valid input
+			 
+			 
 			 Scanner sc= new Scanner(System.in);
-			 System.out.println("Car Rental Management System\n");
+			 System.out.println("\n\nCar Rental Management System\n");
 			 System.out.println("1.Car Management");
 			 System.out.println("2.Renter Management");
 			 System.out.println("3.Transactions");
