@@ -9,7 +9,7 @@ public class Main {
 		 CMS car_management= new CMS();
 		 RMS renter_management= new RMS();
 		 CRMS rent_transactions= new CRMS(car_management,renter_management);
-		 
+		 //main menu
 		 while(true)
 		 {
 			 Scanner sc= new Scanner(System.in);
