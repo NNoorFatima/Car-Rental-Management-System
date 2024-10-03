@@ -515,8 +515,7 @@ public class Main {
 			}	
 		}
 	}
-	
-	
+
 	public static void handleCarFile(Car car,String filename,FileManager storage)
 	{
 		if(car==null)
