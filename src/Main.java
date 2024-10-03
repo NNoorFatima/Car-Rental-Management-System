@@ -34,7 +34,7 @@ public class Main {
 	                System.out.println("Invalid choice. Please select a valid option (1-3).");
 	            }
 	        }while (storage < 1 || storage > 3); // Loop until valid input
-		 
+		 //storage choice
 		 if(storage==1)
 		 {
 			 myStorage=new FileManager();
@@ -72,7 +72,7 @@ public class Main {
 				 System.out.println("1.Add new cars");
 				 System.out.println("2.Display available cars");
 				 System.out.println("3.Remove Car");
-				 //System.out.println("Enter your choice:\n");
+				 
 				 int choice_1=-1;
 				 //validate input 
 				 do {
@@ -89,12 +89,13 @@ public class Main {
 			        } while (choice_1 < 1 || choice_1 > 3);  // Repeat until a valid choice is entered
 
 				 //done validation 
-				 
+				 Car car_type= null;
 				 if(choice_1==1)
 				 {
+					 
 					 System.out.println("Enter if its\n a.CompactCar\n b.SUV\n c.Luxury Car ");
 					 char ch=' ';
-					// Input validation for car type selection
+					 //validation 
 				        do {
 				            System.out.println("Enter your choice (a, b, or c):");
 				            String input = sc.next();  // Get the user's input as a String
@@ -105,7 +106,6 @@ public class Main {
 				            } else {
 				                ch = 'x';  // Invalid input flag
 				            }
-
 				            if (ch != 'a' && ch != 'b' && ch != 'c') {
 				                System.out.println("Invalid choice. Please enter 'a' for Compact Car, 'b' for SUV, or 'c' for Luxury Car.");
 				            }
@@ -125,16 +125,9 @@ public class Main {
 						 sc.nextLine(); // Consume the newline character
 						 System.out.println("Enter plate number");
 						 String plate_no = sc.nextLine();
-						 Car car_type = new CompactCar(brand, model, year, plate_no, false, fee);
+						 car_type = new CompactCar(brand, model, year, plate_no, false, fee);
 						 car_management.addCars(car_type);
-						 if(storage==1) ///file based 
-						 {
-							 try {
-							        myStorage.saveCars(car_type, filename); // This may throw IOException
-							    } catch (IOException e) {
-							        System.out.println("An error occurred while saving the car data: " + e.getMessage());
-							    }
-						 }
+						 
 						 
 					 }
 					 else if(ch=='b')
@@ -152,16 +145,8 @@ public class Main {
 						 sc.nextLine(); 
 						 System.out.println("Enter plate number");
 						 String plate_no = sc.nextLine();
-						 Car car_type=new SUV(brand,model,year,plate_no,false,fee);
+						 car_type=new SUV(brand,model,year,plate_no,false,fee);
 						 car_management.addCars(car_type);
-						 if(storage==1)
-						 {
-							 try {
-							        myStorage.saveCars(car_type, filename); // This may throw IOException
-							    } catch (IOException e) {
-							        System.out.println("An error occurred while saving the car data: " + e.getMessage());
-							    }
-						 }
 						 
 					 }
 					 else if(ch=='c') 
@@ -179,41 +164,11 @@ public class Main {
 						 sc.nextLine(); 
 						 System.out.println("Enter plate number");
 						 String plate_no = sc.nextLine();
-						 Car car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
+						 car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
 						 car_management.addCars(car_type);
-						 if(storage==1)
-						 {
-							 try {
-							        myStorage.saveCars(car_type, filename); // This may throw IOException
-							    } catch (IOException e) {
-							        System.out.println("An error occurred while saving the car data: " + e.getMessage());
-							    }
-						 }
+						
 					 }
-
-					int storagechoice=-1;
-					do {
-					    System.out.println("Do you want to see all the cars in the system? Press 1(YES) 0(NO):");
-					    while (!sc.hasNextInt()) {
-					        System.out.println("Invalid input. Please enter 1 for YES or 0 for NO.");
-					        sc.next(); // discard invalid input
-					    }
-					    storagechoice = sc.nextInt(); // read user input
-					    if (storagechoice != 0 && storagechoice != 1) {
-					        System.out.println("Invalid choice. Please enter 1 for YES or 0 for NO.");
-					    }
-					} while (storagechoice != 0 && storagechoice != 1);
-					if(storagechoice==1)
-					{
-						try {
-					        myStorage.displayCars(filename); // This may throw IOException
-					    } catch (IOException e) {
-					        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
-					    }
-					}
 					 
-					 
-
 	 			 }
 				 else if(choice_1==2)
 				 {
@@ -225,18 +180,22 @@ public class Main {
 					 int id= sc.nextInt();
 					 car_management.removeCar(id);
 				 }
+				 handleCarFile(car_type,filename,myStorage);
 				 
 				 
 			 }
+			 
+//========================================================================
+			 
 			 else if (choice==2)
 			 {
 				 System.out.println("1.Add new renters");
 				 System.out.println("2.Display renter details");
 				 System.out.println("3.Remove renter");
-				// System.out.println("Enter your choice:\n");
+				
 				 //validate 
 				 int choice_2=-1;
-				// Validate input for renter management menu
+				 // Validate input for renter management menu
 			        do {
 			            System.out.println("Enter your choice (1-3):");
 			            while (!sc.hasNextInt()) {  // Check if the input is an integer
@@ -406,7 +365,150 @@ public class Main {
 		 
 	}
 
-	
-	
+	//CRUD FILE 
+	public static void handleCarFile(Car car,String filename,FileManager storage)
+	{
+		int option=-1;
+		Scanner sc= new Scanner(System.in);
+		
+		while(true)
+		{
+			System.out.println("Choose option");
+			System.out.println("1. Save Car in File");
+			System.out.println("2. Update Car info");
+			System.out.println("3. Display all Car Details");
+			System.out.println("4. Remove Car");
+			System.out.println("5. Exit");
+			if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) 
+			{
+	             System.out.println("You selected option " + option);
+	             break; // Exit loop if valid choice
+	        } 
+			else 
+			{
+	             System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+	             sc.next(); // Discard invalid input
+	        }
+		}
+		if(option==1)
+		{
+			 try {
+			        storage.saveCars(car, filename); // This may throw IOException
+			    } catch (IOException e) {
+			        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+			    }
+		}
+		else if(option==2)
+		{
+			Car car_type= null;
+			//update car with car id passed in parameter
+			System.out.println("Enter the new car details");
+			System.out.println("Enter if its\n a.CompactCar\n b.SUV\n c.Luxury Car ");
+			 char ch=' ';
+			 //validation 
+		        do {
+		            System.out.println("Enter your choice (a, b, or c):");
+		            String input = sc.next();  // Get the user's input as a String
+
+		            if (input.length() == 1) {  // Ensure input is a single character
+		                ch = input.charAt(0);  // Get the first character
+		                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
+		            } else {
+		                ch = 'x';  // Invalid input flag
+		            }
+		            if (ch != 'a' && ch != 'b' && ch != 'c') {
+		                System.out.println("Invalid choice. Please enter 'a' for Compact Car, 'b' for SUV, or 'c' for Luxury Car.");
+		            }
+		        } while (ch != 'a' && ch != 'b' && ch != 'c'); 
+			 if(ch=='a')
+			 {
+				 sc.nextLine();
+				 System.out.println("Enter brand");
+				 String brand = sc.nextLine();
+				 System.out.println("Enter model");
+				 String model = sc.nextLine();
+				 System.out.println("Enter year");
+				 int year = sc.nextInt();
+				 sc.nextLine(); // Consume the newline character
+				 System.out.println("Enter rental fee");
+				 int fee = sc.nextInt();
+				 sc.nextLine(); // Consume the newline character
+				 System.out.println("Enter plate number");
+				 String plate_no = sc.nextLine();
+				 car_type = new CompactCar(brand, model, year, plate_no, false, fee);
+				 
+			 }
+			 else if(ch=='b')
+			 {
+				 sc.nextLine();
+				 System.out.println("Enter brand");
+				 String brand = sc.nextLine();
+				 System.out.println("Enter model");
+				 String model = sc.nextLine();
+				 System.out.println("Enter year");
+				 int year= sc.nextInt();
+				 sc.nextLine(); 
+				 System.out.println("Enter rental fee");
+				 int fee= sc.nextInt();
+				 sc.nextLine(); 
+				 System.out.println("Enter plate number");
+				 String plate_no = sc.nextLine();
+				 car_type=new SUV(brand,model,year,plate_no,false,fee);
+				
+			 }
+			 else if(ch=='c') 
+			 {
+				 sc.nextLine();
+				 System.out.println("Enter brand");
+				 String brand = sc.nextLine();
+				 System.out.println("Enter model");
+				 String model = sc.nextLine();
+				 System.out.println("Enter year");
+				 int year= sc.nextInt();
+				 sc.nextLine(); 
+				 System.out.println("Enter rental fee");
+				 int fee= sc.nextInt();
+				 sc.nextLine(); 
+				 System.out.println("Enter plate number");
+				 String plate_no = sc.nextLine();
+				 car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
+			 }
+
+			int id= car.getID();
+			try 
+			{
+			    storage.updateCar(id, car_type, filename);
+			} 
+			catch (IOException e) 
+			{
+			    System.out.println("Error updating the car: " + e.getMessage());
+			    e.printStackTrace();
+			}
+			
+		}
+		else if(option==3)
+		{
+			 try 
+			 {
+				 storage.displayCars(filename); // This may throw IOException
+			 } 
+			 catch (IOException e) 
+			 {
+			        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
+			 }
+		}
+		else if(option==4)
+		{
+			try 
+			{
+			    storage.removeCar(car.getID(), filename); // Remove the car from the file
+			} 
+			catch (IOException e) 
+			{
+			    System.out.println("Error occurred while removing the car: " + e.getMessage());
+			}
+		}
+		
+	}
 }
 
