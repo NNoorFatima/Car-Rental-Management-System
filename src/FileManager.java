@@ -42,7 +42,8 @@ public class FileManager
 	    	}
 	    	
 	    	
-	    }catch (IOException e) {
+	    }
+	    catch (IOException e) {
 	        System.out.println("Error reading file: " + e.getMessage());
 	    }
 	}
@@ -128,7 +129,113 @@ public class FileManager
 	}
 
 	//RENTER
-	
+	public static void saveRenter(Renter a,String filename) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename,true)))
+        {
+        	 writer.write( a.getRentID() + ";" + a.getName() + ";" + a.getEmail()+ ";"
+                     + a.getAddress() + ";" + a.getPh_no());
+             writer.newLine();
+        }
+	}
+	public static void displayRenters( String filename) throws IOException 
+	{
+	    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) 
+	    {
+	    	
+	    	String line =reader.readLine();
+	    	System.out.println("printing renters data from file");
+	    	while(line != null)
+	    	{
+	    		String[] renterData= line.split(";");
+	    		int cur_ID= Integer.parseInt(renterData[0]);
+	    			System.out.println("Renter ID: " + renterData[0]);
+	    			System.out.println("Name: " + renterData[1]);
+	    			System.out.println("Email: " + renterData[2]);
+	    			System.out.println("Address: " + renterData[3]);
+	    			System.out.println("Phone_no: " + renterData[4]+ "\n");
+	    		line =reader.readLine();
+	    	}
+	    }
+	    catch (IOException e) {
+	        System.out.println("Error reading file: " + e.getMessage());
+	    }
+	}
+	public static void updateRenter(int id, Renter rent_type, String filename) throws IOException {
+        File file = new File(filename);
+        List<String> lines = new ArrayList<>();
+        boolean found = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+        {
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                String[] renterDetails = line.split(";");
+                if (Integer.parseInt(renterDetails[0]) == id)
+                {
+                    // Update the line with the new car details
+                    lines.add(rent_type.getRentID() + ";" + rent_type.getName() + ";" + rent_type.getEmail() + ";"
+                            + rent_type.getAddress()+ ";" + rent_type.getPh_no());
+                    found = true;
+                } 
+                else 
+                {
+                    lines.add(line);
+                }
+            }
+        }
+        if (found)
+        {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) 
+            {
+                for (String updatedLine : lines)
+                {
+                    writer.write(updatedLine);
+                    writer.newLine();
+                }
+            }
+            System.out.println("Renter with ID " + id + " has been updated successfully.");
+        } 
+        else 
+        {
+            System.out.println("Renter with ID " + id + " not found.");
+        }
+    }
+	public static void removeRenter(int renterId, String filename) throws IOException 
+	{
+	    File inputFile = new File(filename);
+	    File tempFile = new File("tempFile.txt");
+
+	    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+	         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) 
+	    {
+
+	        String line;
+	        boolean found = false;
+
+	        while ((line = reader.readLine()) != null) 
+	        {
+	            if (Integer.parseInt(line.split(";")[0]) != renterId) {
+	                writer.write(line);
+	                writer.newLine();
+	            } 
+	            else 
+	            {
+	                found = true; 
+	            }
+	        }
+	        
+	        if (found) 
+	        	System.out.println("Car with ID " + renterId + " removed.");
+	        else 
+	        	System.out.println("Car with ID " + renterId + " not found.");
+	    }
+
+	    if (!inputFile.delete() || !tempFile.renameTo(inputFile)) 
+	    {
+	        System.out.println("File update failed.");
+	    }
+	}
+
 	//TRANSACTIONS
 	
 }

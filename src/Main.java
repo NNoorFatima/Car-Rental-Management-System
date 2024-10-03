@@ -13,7 +13,10 @@ public class Main {
 		 CRMS rent_transactions= new CRMS(car_management,renter_management);
 		 FileManager myStorage=null;
 		 int storage = 0;
-	     String filename="dataCar.txt";
+	     String carfilename="dataCar.txt";
+	     String renterfilename="dataRenter.txt";
+	     
+
 	     
 	     System.out.println("Choose your storage method,enter (1-3):");
 		 System.out.println("1. File-based Storage");
@@ -40,7 +43,7 @@ public class Main {
 			 myStorage=new FileManager();
 		 }
 		 
-		 //main menu
+		 //MAIN MENUUU
 	     
 		 while(true)
 		 {
@@ -180,7 +183,7 @@ public class Main {
 					 int id= sc.nextInt();
 					 car_management.removeCar(id);
 				 }
-				 handleCarFile(car_type,filename,myStorage);
+				 handleCarFile(car_type,carfilename,myStorage);
 				 
 				 
 			 }
@@ -189,6 +192,7 @@ public class Main {
 			 
 			 else if (choice==2)
 			 {
+				 Renter renter_type =null;
 				 System.out.println("1.Add new renters");
 				 System.out.println("2.Display renter details");
 				 System.out.println("3.Remove renter");
@@ -247,7 +251,7 @@ public class Main {
 						 System.out.println("Enter address");
 						 String add = sc.nextLine();
 	
-						 Renter renter_type = new RegularRenter(name,email,phone_no,add);
+						 renter_type = new RegularRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
 					 else if(ch=='b')
@@ -269,7 +273,7 @@ public class Main {
 						 System.out.println("Enter address");
 						 String add = sc.nextLine();
 	
-						 Renter renter_type = new FrequentRenter(name,email,phone_no,add);
+						 renter_type = new FrequentRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
 					 else if(ch=='c')
@@ -291,7 +295,7 @@ public class Main {
 						 System.out.println("Enter address");
 						 String add = sc.nextLine();
 	
-						 Renter renter_type = new CorporateRenter(name,email,phone_no,add);
+						 renter_type = new CorporateRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
 					 
@@ -307,6 +311,7 @@ public class Main {
 					 renter_management.removeRenter(id);
 				 }
 				 
+				 handleRenterFile(renter_type,renterfilename,myStorage);
 			 }
 			 else if(choice==3)//transactions 
 			 {
@@ -366,8 +371,156 @@ public class Main {
 	}
 
 	//CRUD FILE 
+	public static void handleRenterFile(Renter rent, String filename, FileManager storage)
+	{
+		if(rent==null)
+			return;
+		int option=-1;
+		Scanner sc= new Scanner(System.in);
+		
+		while(true)
+		{
+			System.out.println("Choose option");
+			System.out.println("1. Save Renter in File");
+			System.out.println("2. Update Renter info");
+			System.out.println("3. Display all Renter Details");
+			System.out.println("4. Remove Renter");
+			System.out.println("5. Exit");
+			if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) 
+			{
+	             System.out.println("You selected option " + option);
+	             break; 
+	        } 
+			else 
+			{
+	             System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+	             sc.next(); 
+	        }
+		}
+		if(option==1)
+		{
+			try 
+			 {
+			        storage.saveRenter(rent, filename); // This may throw IOException
+			 } 
+			 catch (IOException e) 
+			 {
+			        System.out.println("An error occurred while saving the renter data: " + e.getMessage());
+			 }
+		}
+		else if(option==2)
+		{
+			Renter renter_type=null;
+			System.out.println("Enter if its\n a.Regular Renter\n b.Frequent Renter \n c.Corporate Renter ");
+			 char ch;
+			 do {
+		            System.out.println("Enter your choice (a, b, or c):");
+		            String input = sc.next();  // Get user's input as a String
+
+		            if (input.length() == 1) {  // Ensure input is a single character
+		                ch = input.charAt(0);  // Get the first character
+		                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
+		            } else {
+		                ch = 'x';  // Invalid input flag
+		            }
+
+		            if (ch != 'a' && ch != 'b' && ch != 'c') {
+		                System.out.println("Invalid choice. Please enter 'a' for Regular Renter, 'b' for Frequent Renter, or 'c' for Corporate Renter.");
+		            }
+		        } while (ch != 'a' && ch != 'b' && ch != 'c');
+			 if(ch=='a')
+			 {
+				 sc.nextLine();
+				 System.out.println("Enter name");
+				 String name = sc.nextLine();
+
+				 System.out.println("Enter email");
+				 String email = sc.nextLine();
+				 
+				 System.out.println("Enter phone number");
+				 String phone_no = sc.nextLine();
+				 
+				 System.out.println("Enter address");
+				 String add = sc.nextLine();
+
+				 renter_type = new RegularRenter(name,email,phone_no,add);
+			 }
+			 else if(ch=='b')
+			 {
+				 sc.nextLine();
+				 System.out.println("Enter name");
+				 String name = sc.nextLine();
+
+				 System.out.println("Enter email");
+				 String email = sc.nextLine();
+
+				
+				 System.out.println("Enter phone number");
+				 String phone_no = sc.nextLine();
+				 
+				 System.out.println("Enter address");
+				 String add = sc.nextLine();
+
+				 renter_type = new FrequentRenter(name,email,phone_no,add);
+			 }
+			 else if(ch=='c')
+			 {
+				 sc.nextLine();
+				 System.out.println("Enter name");
+				 String name = sc.nextLine();
+
+				 System.out.println("Enter email");
+				 String email = sc.nextLine();
+
+				 System.out.println("Enter phone number");
+				 String phone_no = sc.nextLine();
+				 
+				 System.out.println("Enter address");
+				 String add = sc.nextLine();
+
+				 renter_type = new CorporateRenter(name,email,phone_no,add);
+			 }
+			 int id= rent.getRentID();
+				try 
+				{
+				    storage.updateRenter(id, renter_type, filename);
+				} 
+				catch (IOException e) 
+				{
+				    System.out.println("Error updating the renter: " + e.getMessage());
+				    e.printStackTrace();
+				}
+				
+		}
+		else if(option ==3)
+		{
+			try 
+			 {
+				 storage.displayRenters(filename); // This may throw IOException
+			 } 
+			 catch (IOException e) 
+			 {
+			        System.out.println("An error occurred while displaying the renter data: " + e.getMessage());
+			 }
+		}
+		else if(option==4)
+		{
+			try 
+			{
+			    storage.removeRenter(rent.getRentID(), filename); // Remove the car from the file
+			} 
+			catch (IOException e) 
+			{
+			    System.out.println("Error occurred while removing the renter: " + e.getMessage());
+			}	
+		}
+	}
+	
+	
 	public static void handleCarFile(Car car,String filename,FileManager storage)
 	{
+		if(car==null)
+			return;
 		int option=-1;
 		Scanner sc= new Scanner(System.in);
 		
@@ -392,11 +545,14 @@ public class Main {
 		}
 		if(option==1)
 		{
-			 try {
+			 try 
+			 {
 			        storage.saveCars(car, filename); // This may throw IOException
-			    } catch (IOException e) {
+			 } 
+			 catch (IOException e) 
+			 {
 			        System.out.println("An error occurred while saving the car data: " + e.getMessage());
-			    }
+			 }
 		}
 		else if(option==2)
 		{

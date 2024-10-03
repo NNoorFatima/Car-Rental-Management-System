@@ -1,3 +1,1 @@
-1;toyota;corolla;2020;343;aa1;false
-2;bmw;giki;2021;56;afd32;false
-3;toyota;yaris;2020;32;abc-123;false
+0;toyota;yaria;2020;12;abc-123;false
