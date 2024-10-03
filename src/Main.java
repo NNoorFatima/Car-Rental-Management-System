@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.io.IOException;
+
 
 import java.util.*;
 public class Main {
@@ -9,30 +11,39 @@ public class Main {
 		 CMS car_management= new CMS();
 		 RMS renter_management= new RMS();
 		 CRMS rent_transactions= new CRMS(car_management,renter_management);
+		 FileManager myStorage=null;
+		 int storage = 0;
+	     String filename="dataCar.txt";
+	     
+	     System.out.println("Choose your storage method,enter (1-3):");
+		 System.out.println("1. File-based Storage");
+		 System.out.println("2. SQL-based Storage");
+		 System.out.println("3. Oracle Storage");
+		 //validation 
+		 Scanner sc1 = new Scanner(System.in);
+	    
+		 do {
+	            System.out.print("Enter your choice (1-3): ");
+	            while (!sc1.hasNextInt()) {  // Check if input is an integer
+	                System.out.println("Invalid input. Please enter a number between 1 and 3.");
+	                sc1.next();  // Discard invalid input
+	            }
+	            storage = sc1.nextInt(); // Read user input
+
+	            if (storage < 1 || storage > 3) {
+	                System.out.println("Invalid choice. Please select a valid option (1-3).");
+	            }
+	        }while (storage < 1 || storage > 3); // Loop until valid input
+		 
+		 if(storage==1)
+		 {
+			 myStorage=new FileManager();
+		 }
+		 
 		 //main menu
+	     
 		 while(true)
 		 {
-			 //choose db storage method 
-			 System.out.println("Choose your storage method,enter (1-3):");
-			 System.out.println("1. File-based Storage");
-			 System.out.println("2. SQL-based Storage");
-			 System.out.println("3. Oracle Storage");
-			 //validation 
-			 Scanner sc1 = new Scanner(System.in);
-		     int storage = 0;
-			 do {
-		            System.out.print("Enter your choice (1-3): ");
-		            while (!sc1.hasNextInt()) {  // Check if input is an integer
-		                System.out.println("Invalid input. Please enter a number between 1 and 3.");
-		                sc1.next();  // Discard invalid input
-		            }
-		            storage = sc1.nextInt(); // Read user input
-	
-		            if (storage < 1 || storage > 3) {
-		                System.out.println("Invalid choice. Please select a valid option (1-3).");
-		            }
-		        }while (storage < 1 || storage > 3); // Loop until valid input
-			 
 			 
 			 Scanner sc= new Scanner(System.in);
 			 System.out.println("\n\nCar Rental Management System\n");
@@ -116,6 +127,14 @@ public class Main {
 						 String plate_no = sc.nextLine();
 						 Car car_type = new CompactCar(brand, model, year, plate_no, false, fee);
 						 car_management.addCars(car_type);
+						 if(storage==1) ///file based 
+						 {
+							 try {
+							        myStorage.saveCars(car_type, filename); // This may throw IOException
+							    } catch (IOException e) {
+							        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+							    }
+						 }
 						 
 					 }
 					 else if(ch=='b')
@@ -135,6 +154,14 @@ public class Main {
 						 String plate_no = sc.nextLine();
 						 Car car_type=new SUV(brand,model,year,plate_no,false,fee);
 						 car_management.addCars(car_type);
+						 if(storage==1)
+						 {
+							 try {
+							        myStorage.saveCars(car_type, filename); // This may throw IOException
+							    } catch (IOException e) {
+							        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+							    }
+						 }
 						 
 					 }
 					 else if(ch=='c') 
@@ -154,7 +181,39 @@ public class Main {
 						 String plate_no = sc.nextLine();
 						 Car car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
 						 car_management.addCars(car_type);
+						 if(storage==1)
+						 {
+							 try {
+							        myStorage.saveCars(car_type, filename); // This may throw IOException
+							    } catch (IOException e) {
+							        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+							    }
+						 }
 					 }
+
+					int storagechoice=-1;
+					do {
+					    System.out.println("Do you want to see all the cars in the system? Press 1(YES) 0(NO):");
+					    while (!sc.hasNextInt()) {
+					        System.out.println("Invalid input. Please enter 1 for YES or 0 for NO.");
+					        sc.next(); // discard invalid input
+					    }
+					    storagechoice = sc.nextInt(); // read user input
+					    if (storagechoice != 0 && storagechoice != 1) {
+					        System.out.println("Invalid choice. Please enter 1 for YES or 0 for NO.");
+					    }
+					} while (storagechoice != 0 && storagechoice != 1);
+					if(storagechoice==1)
+					{
+						try {
+					        myStorage.displayCars(filename); // This may throw IOException
+					    } catch (IOException e) {
+					        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
+					    }
+					}
+					 
+					 
+
 	 			 }
 				 else if(choice_1==2)
 				 {
@@ -347,4 +406,7 @@ public class Main {
 		 
 	}
 
+	
+	
 }
+
