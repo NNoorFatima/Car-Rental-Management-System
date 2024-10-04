@@ -385,6 +385,7 @@ public class Main {
 		 
 	}
 
+	
 	//CRUD FILE 
 	public static void handleRenterFile(Renter rent, String filename, FileManager storage)
 	{
