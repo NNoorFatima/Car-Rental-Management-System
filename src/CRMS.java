@@ -7,6 +7,7 @@ public class CRMS {
 	private RMS renter_management;
 	private List<rental_transaction> transactions;
 
+	
 	CRMS(CMS a,RMS b)
 	{
 		this.car_management=a;
@@ -213,6 +214,9 @@ public class CRMS {
 	}
 	public List<rental_transaction> getTransactions() {
 		return transactions;
+	}
+	public void setTransactions(List<rental_transaction> transactions) {
+		this.transactions = transactions;
 	}
 
 }

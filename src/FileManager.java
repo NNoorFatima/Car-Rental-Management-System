@@ -1,6 +1,7 @@
 import java.io.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 public class FileManager 
 {
@@ -29,7 +30,7 @@ public class FileManager
 	    		
 	    		
 	    		
-	    			System.out.println("Car ID: " + carData[0]);
+	    			System.out.println("\nCar ID: " + carData[0]);
 	    			System.out.println("Brand: " + carData[1]);
 	    			System.out.println("Model: " + carData[2]);
 	    			System.out.println("Year: " + carData[3]);
@@ -148,7 +149,7 @@ public class FileManager
 	    	{
 	    		String[] renterData= line.split(";");
 	    		int cur_ID= Integer.parseInt(renterData[0]);
-	    			System.out.println("Renter ID: " + renterData[0]);
+	    			System.out.println("\nRenter ID: " + renterData[0]);
 	    			System.out.println("Name: " + renterData[1]);
 	    			System.out.println("Email: " + renterData[2]);
 	    			System.out.println("Address: " + renterData[3]);
@@ -225,9 +226,9 @@ public class FileManager
 	        }
 	        
 	        if (found) 
-	        	System.out.println("Car with ID " + renterId + " removed.");
+	        	System.out.println("Renter with ID " + renterId + " removed.");
 	        else 
-	        	System.out.println("Car with ID " + renterId + " not found.");
+	        	System.out.println("Renter with ID " + renterId + " not found.");
 	    }
 
 	    if (!inputFile.delete() || !tempFile.renameTo(inputFile)) 
@@ -237,5 +238,74 @@ public class FileManager
 	}
 
 	//TRANSACTIONS
-	
+	public static void saveTransactions(List<rental_transaction> tran, String filename) throws IOException
+	{
+	    if (tran != null && !tran.isEmpty()) 
+	    {
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
+	        {
+	            rental_transaction a = tran.get(tran.size() - 1); // Get the last transaction
+	            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
+	                         a.getCar_type() + ";" + a.getRenter_type());
+	            writer.newLine(); 
+	        }
+	    }
+	}
+	public static void displayTransactions(String filename)throws IOException 
+	{
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) 
+	    {
+	    	
+	    	String line =reader.readLine();
+	    	System.out.println("printing transactions data from file");
+	    	while(line != null)
+	    	{
+	    		String[] transData= line.split(";");
+	    		int cur_ID= Integer.parseInt(transData[0]);
+	    			System.out.println("\nTransaction ID: " + transData[0]);
+	    			System.out.println("Car ID: " + transData[1]);
+	    			System.out.println("Renter ID: " + transData[2]);
+	    			System.out.println("Car Type: " + transData[3]);
+	    			System.out.println("Renter Type: " + transData[4]+ "\n");
+	    		line =reader.readLine();
+	    	}
+	    }
+	    catch (IOException e) {
+	        System.out.println("Error reading file: " + e.getMessage());
+	    }
+	}
+	public static void removeTransaction(int tranid,String filename)throws IOException 
+	{
+		File inputFile = new File(filename);
+	    File tempFile = new File("tempFile.txt");
+
+	    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+	         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) 
+	    {
+
+	        String line;
+	        boolean found = false;
+
+	        while ((line = reader.readLine()) != null) 
+	        {
+	            if (Integer.parseInt(line.split(";")[0]) != tranid) {
+	                writer.write(line);
+	                writer.newLine();
+	            } 
+	            else 
+	            	found = true; 
+	            
+	        }
+	        
+	        if (found) 
+	        	System.out.println("Transaction with ID " + tranid + " removed.");
+	        else 
+	        	System.out.println("Transaction with ID " + tranid + " not found.");
+	    }
+
+	    if (!inputFile.delete() || !tempFile.renameTo(inputFile)) 
+	    {
+	        System.out.println("File update failed.");
+	    }
+	}
 }

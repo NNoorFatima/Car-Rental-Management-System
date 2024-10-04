@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.io.IOException;
 
 
@@ -15,7 +14,7 @@ public class Main {
 		 int storage = 0;
 	     String carfilename="dataCar.txt";
 	     String renterfilename="dataRenter.txt";
-	     
+	     String tranfilename="dataTransaction.txt";
 
 	     
 	     System.out.println("Choose your storage method,enter (1-3):");
@@ -313,6 +312,8 @@ public class Main {
 				 
 				 handleRenterFile(renter_type,renterfilename,myStorage);
 			 }
+//========================================================================
+
 			 else if(choice==3)//transactions 
 			 {
 				 System.out.println("1.Rent a car");
@@ -361,6 +362,8 @@ public class Main {
 					 int car_id= sc.nextInt();
 					 rent_transactions.returnCar(renter_id, car_id);
 				 }
+				 
+				 handleTransactionFile(rent_transactions.getTransactions(),tranfilename,myStorage);
 			 }
 			 else if(choice==4)
 			 {
@@ -380,142 +383,145 @@ public class Main {
 		
 		while(true)
 		{
-			System.out.println("Choose option");
-			System.out.println("1. Save Renter in File");
-			System.out.println("2. Update Renter info");
-			System.out.println("3. Display all Renter Details");
-			System.out.println("4. Remove Renter");
-			System.out.println("5. Exit");
-			if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) 
+			while (true) {
+				System.out.println("Choose option");
+				System.out.println("1. Save Renter in File");
+				System.out.println("2. Update Renter info");
+				System.out.println("3. Display all Renter Details");
+				System.out.println("4. Remove Renter");
+				System.out.println("5. Exit");
+				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
+					System.out.println("You selected option " + option);
+					break;
+				} else {
+					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+					sc.next();
+				} 
+			}
+			if(option==1)
 			{
-	             System.out.println("You selected option " + option);
-	             break; 
-	        } 
-			else 
+				try 
+				 {
+				        storage.saveRenter(rent, filename); // This may throw IOException
+				 } 
+				 catch (IOException e) 
+				 {
+				        System.out.println("An error occurred while saving the renter data: " + e.getMessage());
+				 }
+			}
+			else if(option==2)
 			{
-	             System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-	             sc.next(); 
-	        }
-		}
-		if(option==1)
-		{
-			try 
-			 {
-			        storage.saveRenter(rent, filename); // This may throw IOException
-			 } 
-			 catch (IOException e) 
-			 {
-			        System.out.println("An error occurred while saving the renter data: " + e.getMessage());
-			 }
-		}
-		else if(option==2)
-		{
-			Renter renter_type=null;
-			System.out.println("Enter if its\n a.Regular Renter\n b.Frequent Renter \n c.Corporate Renter ");
-			 char ch;
-			 do {
-		            System.out.println("Enter your choice (a, b, or c):");
-		            String input = sc.next();  // Get user's input as a String
-
-		            if (input.length() == 1) {  // Ensure input is a single character
-		                ch = input.charAt(0);  // Get the first character
-		                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
-		            } else {
-		                ch = 'x';  // Invalid input flag
-		            }
-
-		            if (ch != 'a' && ch != 'b' && ch != 'c') {
-		                System.out.println("Invalid choice. Please enter 'a' for Regular Renter, 'b' for Frequent Renter, or 'c' for Corporate Renter.");
-		            }
-		        } while (ch != 'a' && ch != 'b' && ch != 'c');
-			 if(ch=='a')
-			 {
-				 sc.nextLine();
-				 System.out.println("Enter name");
-				 String name = sc.nextLine();
-
-				 System.out.println("Enter email");
-				 String email = sc.nextLine();
-				 
-				 System.out.println("Enter phone number");
-				 String phone_no = sc.nextLine();
-				 
-				 System.out.println("Enter address");
-				 String add = sc.nextLine();
-
-				 renter_type = new RegularRenter(name,email,phone_no,add);
-			 }
-			 else if(ch=='b')
-			 {
-				 sc.nextLine();
-				 System.out.println("Enter name");
-				 String name = sc.nextLine();
-
-				 System.out.println("Enter email");
-				 String email = sc.nextLine();
-
-				
-				 System.out.println("Enter phone number");
-				 String phone_no = sc.nextLine();
-				 
-				 System.out.println("Enter address");
-				 String add = sc.nextLine();
-
-				 renter_type = new FrequentRenter(name,email,phone_no,add);
-			 }
-			 else if(ch=='c')
-			 {
-				 sc.nextLine();
-				 System.out.println("Enter name");
-				 String name = sc.nextLine();
-
-				 System.out.println("Enter email");
-				 String email = sc.nextLine();
-
-				 System.out.println("Enter phone number");
-				 String phone_no = sc.nextLine();
-				 
-				 System.out.println("Enter address");
-				 String add = sc.nextLine();
-
-				 renter_type = new CorporateRenter(name,email,phone_no,add);
-			 }
-			 int id= rent.getRentID();
+				Renter renter_type=null;
+				System.out.println("Enter if its\n a.Regular Renter\n b.Frequent Renter \n c.Corporate Renter ");
+				 char ch;
+				 do {
+			            System.out.println("Enter your choice (a, b, or c):");
+			            String input = sc.next();  // Get user's input as a String
+	
+			            if (input.length() == 1) {  // Ensure input is a single character
+			                ch = input.charAt(0);  // Get the first character
+			                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
+			            } else {
+			                ch = 'x';  // Invalid input flag
+			            }
+	
+			            if (ch != 'a' && ch != 'b' && ch != 'c') {
+			                System.out.println("Invalid choice. Please enter 'a' for Regular Renter, 'b' for Frequent Renter, or 'c' for Corporate Renter.");
+			            }
+			        } while (ch != 'a' && ch != 'b' && ch != 'c');
+				 if(ch=='a')
+				 {
+					 sc.nextLine();
+					 System.out.println("Enter name");
+					 String name = sc.nextLine();
+	
+					 System.out.println("Enter email");
+					 String email = sc.nextLine();
+					 
+					 System.out.println("Enter phone number");
+					 String phone_no = sc.nextLine();
+					 
+					 System.out.println("Enter address");
+					 String add = sc.nextLine();
+	
+					 renter_type = new RegularRenter(name,email,phone_no,add);
+				 }
+				 else if(ch=='b')
+				 {
+					 sc.nextLine();
+					 System.out.println("Enter name");
+					 String name = sc.nextLine();
+	
+					 System.out.println("Enter email");
+					 String email = sc.nextLine();
+	
+					
+					 System.out.println("Enter phone number");
+					 String phone_no = sc.nextLine();
+					 
+					 System.out.println("Enter address");
+					 String add = sc.nextLine();
+	
+					 renter_type = new FrequentRenter(name,email,phone_no,add);
+				 }
+				 else if(ch=='c')
+				 {
+					 sc.nextLine();
+					 System.out.println("Enter name");
+					 String name = sc.nextLine();
+	
+					 System.out.println("Enter email");
+					 String email = sc.nextLine();
+	
+					 System.out.println("Enter phone number");
+					 String phone_no = sc.nextLine();
+					 
+					 System.out.println("Enter address");
+					 String add = sc.nextLine();
+	
+					 renter_type = new CorporateRenter(name,email,phone_no,add);
+				 }
+				 int id= rent.getRentID();
+					try 
+					{
+					    storage.updateRenter(id, renter_type, filename);
+					} 
+					catch (IOException e) 
+					{
+					    System.out.println("Error updating the renter: " + e.getMessage());
+					    e.printStackTrace();
+					}
+					
+			}
+			else if(option ==3)
+			{
+				try 
+				 {
+					 storage.displayRenters(filename); // This may throw IOException
+				 } 
+				 catch (IOException e) 
+				 {
+				        System.out.println("An error occurred while displaying the renter data: " + e.getMessage());
+				 }
+			}
+			else if(option==4)
+			{
 				try 
 				{
-				    storage.updateRenter(id, renter_type, filename);
+				    storage.removeRenter(rent.getRentID(), filename); // Remove the car from the file
 				} 
 				catch (IOException e) 
 				{
-				    System.out.println("Error updating the renter: " + e.getMessage());
-				    e.printStackTrace();
-				}
-				
-		}
-		else if(option ==3)
-		{
-			try 
-			 {
-				 storage.displayRenters(filename); // This may throw IOException
-			 } 
-			 catch (IOException e) 
-			 {
-			        System.out.println("An error occurred while displaying the renter data: " + e.getMessage());
-			 }
-		}
-		else if(option==4)
-		{
-			try 
+				    System.out.println("Error occurred while removing the renter: " + e.getMessage());
+				}	
+			}
+			else if(option==5)
 			{
-			    storage.removeRenter(rent.getRentID(), filename); // Remove the car from the file
-			} 
-			catch (IOException e) 
-			{
-			    System.out.println("Error occurred while removing the renter: " + e.getMessage());
-			}	
+				return;
+			}
 		}
 	}
-
+	
 	public static void handleCarFile(Car car,String filename,FileManager storage)
 	{
 		if(car==null)
@@ -525,145 +531,203 @@ public class Main {
 		
 		while(true)
 		{
-			System.out.println("Choose option");
-			System.out.println("1. Save Car in File");
-			System.out.println("2. Update Car info");
-			System.out.println("3. Display all Car Details");
-			System.out.println("4. Remove Car");
-			System.out.println("5. Exit");
-			if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) 
+			while (true) {
+				System.out.println("Choose option");
+				System.out.println("1. Save Car in File");
+				System.out.println("2. Update Car info");
+				System.out.println("3. Display all Car Details");
+				System.out.println("4. Remove Car");
+				System.out.println("5. Exit");
+				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
+					System.out.println("You selected option " + option);
+					break; // Exit loop if valid choice
+				} else {
+					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+					sc.next(); // Discard invalid input
+				} 
+			}
+			if(option==1)
 			{
-	             System.out.println("You selected option " + option);
-	             break; // Exit loop if valid choice
-	        } 
-			else 
+				 try 
+				 {
+				        storage.saveCars(car, filename); // This may throw IOException
+				 } 
+				 catch (IOException e) 
+				 {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
+			}
+			else if(option==2)
 			{
-	             System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-	             sc.next(); // Discard invalid input
-	        }
-		}
-		if(option==1)
-		{
-			 try 
-			 {
-			        storage.saveCars(car, filename); // This may throw IOException
-			 } 
-			 catch (IOException e) 
-			 {
-			        System.out.println("An error occurred while saving the car data: " + e.getMessage());
-			 }
-		}
-		else if(option==2)
-		{
-			Car car_type= null;
-			//update car with car id passed in parameter
-			System.out.println("Enter the new car details");
-			System.out.println("Enter if its\n a.CompactCar\n b.SUV\n c.Luxury Car ");
-			 char ch=' ';
-			 //validation 
-		        do {
-		            System.out.println("Enter your choice (a, b, or c):");
-		            String input = sc.next();  // Get the user's input as a String
-
-		            if (input.length() == 1) {  // Ensure input is a single character
-		                ch = input.charAt(0);  // Get the first character
-		                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
-		            } else {
-		                ch = 'x';  // Invalid input flag
-		            }
-		            if (ch != 'a' && ch != 'b' && ch != 'c') {
-		                System.out.println("Invalid choice. Please enter 'a' for Compact Car, 'b' for SUV, or 'c' for Luxury Car.");
-		            }
-		        } while (ch != 'a' && ch != 'b' && ch != 'c'); 
-			 if(ch=='a')
-			 {
-				 sc.nextLine();
-				 System.out.println("Enter brand");
-				 String brand = sc.nextLine();
-				 System.out.println("Enter model");
-				 String model = sc.nextLine();
-				 System.out.println("Enter year");
-				 int year = sc.nextInt();
-				 sc.nextLine(); // Consume the newline character
-				 System.out.println("Enter rental fee");
-				 int fee = sc.nextInt();
-				 sc.nextLine(); // Consume the newline character
-				 System.out.println("Enter plate number");
-				 String plate_no = sc.nextLine();
-				 car_type = new CompactCar(brand, model, year, plate_no, false, fee);
-				 
-			 }
-			 else if(ch=='b')
-			 {
-				 sc.nextLine();
-				 System.out.println("Enter brand");
-				 String brand = sc.nextLine();
-				 System.out.println("Enter model");
-				 String model = sc.nextLine();
-				 System.out.println("Enter year");
-				 int year= sc.nextInt();
-				 sc.nextLine(); 
-				 System.out.println("Enter rental fee");
-				 int fee= sc.nextInt();
-				 sc.nextLine(); 
-				 System.out.println("Enter plate number");
-				 String plate_no = sc.nextLine();
-				 car_type=new SUV(brand,model,year,plate_no,false,fee);
+				Car car_type= null;
+				//update car with car id passed in parameter
+				System.out.println("Enter the new car details");
+				System.out.println("Enter if its\n a.CompactCar\n b.SUV\n c.Luxury Car ");
+				 char ch=' ';
+				 //validation 
+			        do {
+			            System.out.println("Enter your choice (a, b, or c):");
+			            String input = sc.next();  // Get the user's input as a String
+	
+			            if (input.length() == 1) {  // Ensure input is a single character
+			                ch = input.charAt(0);  // Get the first character
+			                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
+			            } else {
+			                ch = 'x';  // Invalid input flag
+			            }
+			            if (ch != 'a' && ch != 'b' && ch != 'c') {
+			                System.out.println("Invalid choice. Please enter 'a' for Compact Car, 'b' for SUV, or 'c' for Luxury Car.");
+			            }
+			        } while (ch != 'a' && ch != 'b' && ch != 'c'); 
+				 if(ch=='a')
+				 {
+					 sc.nextLine();
+					 System.out.println("Enter brand");
+					 String brand = sc.nextLine();
+					 System.out.println("Enter model");
+					 String model = sc.nextLine();
+					 System.out.println("Enter year");
+					 int year = sc.nextInt();
+					 sc.nextLine(); // Consume the newline character
+					 System.out.println("Enter rental fee");
+					 int fee = sc.nextInt();
+					 sc.nextLine(); // Consume the newline character
+					 System.out.println("Enter plate number");
+					 String plate_no = sc.nextLine();
+					 car_type = new CompactCar(brand, model, year, plate_no, false, fee);
+					 
+				 }
+				 else if(ch=='b')
+				 {
+					 sc.nextLine();
+					 System.out.println("Enter brand");
+					 String brand = sc.nextLine();
+					 System.out.println("Enter model");
+					 String model = sc.nextLine();
+					 System.out.println("Enter year");
+					 int year= sc.nextInt();
+					 sc.nextLine(); 
+					 System.out.println("Enter rental fee");
+					 int fee= sc.nextInt();
+					 sc.nextLine(); 
+					 System.out.println("Enter plate number");
+					 String plate_no = sc.nextLine();
+					 car_type=new SUV(brand,model,year,plate_no,false,fee);
+					
+				 }
+				 else if(ch=='c') 
+				 {
+					 sc.nextLine();
+					 System.out.println("Enter brand");
+					 String brand = sc.nextLine();
+					 System.out.println("Enter model");
+					 String model = sc.nextLine();
+					 System.out.println("Enter year");
+					 int year= sc.nextInt();
+					 sc.nextLine(); 
+					 System.out.println("Enter rental fee");
+					 int fee= sc.nextInt();
+					 sc.nextLine(); 
+					 System.out.println("Enter plate number");
+					 String plate_no = sc.nextLine();
+					 car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
+				 }
+	
+				int id= car.getID();
+				try 
+				{
+				    storage.updateCar(id, car_type, filename);
+				} 
+				catch (IOException e) 
+				{
+				    System.out.println("Error updating the car: " + e.getMessage());
+				    e.printStackTrace();
+				}
 				
-			 }
-			 else if(ch=='c') 
-			 {
-				 sc.nextLine();
-				 System.out.println("Enter brand");
-				 String brand = sc.nextLine();
-				 System.out.println("Enter model");
-				 String model = sc.nextLine();
-				 System.out.println("Enter year");
-				 int year= sc.nextInt();
-				 sc.nextLine(); 
-				 System.out.println("Enter rental fee");
-				 int fee= sc.nextInt();
-				 sc.nextLine(); 
-				 System.out.println("Enter plate number");
-				 String plate_no = sc.nextLine();
-				 car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
-			 }
-
-			int id= car.getID();
-			try 
-			{
-			    storage.updateCar(id, car_type, filename);
-			} 
-			catch (IOException e) 
-			{
-			    System.out.println("Error updating the car: " + e.getMessage());
-			    e.printStackTrace();
 			}
-			
-		}
-		else if(option==3)
-		{
-			 try 
-			 {
-				 storage.displayCars(filename); // This may throw IOException
-			 } 
-			 catch (IOException e) 
-			 {
-			        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
-			 }
-		}
-		else if(option==4)
-		{
-			try 
+			else if(option==3)
 			{
-			    storage.removeCar(car.getID(), filename); // Remove the car from the file
-			} 
-			catch (IOException e) 
+				 try 
+				 {
+					 storage.displayCars(filename); // This may throw IOException
+				 } 
+				 catch (IOException e) 
+				 {
+				        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
+				 }
+			}
+			else if(option==4)
 			{
-			    System.out.println("Error occurred while removing the car: " + e.getMessage());
+				try {
+				    storage.removeCar(car.getID(), filename); // Remove the car from the file
+				} 
+				catch (IOException e) {
+				    System.out.println("Error occurred while removing the car: " + e.getMessage());
+				}
+			}
+			else if(option==5)
+			{
+				return;
 			}
 		}
+	}
+	
+	public static void handleTransactionFile(List<rental_transaction> tran, String filename, FileManager storage)
+	{
+		if(tran==null)
+			return;
+		int option=-1;
+		Scanner sc= new Scanner(System.in);
 		
+		rental_transaction transaction = tran.get(tran.size() - 1);
+		while(true)
+		{
+			while (true) {
+				System.out.println("Choose option");
+				System.out.println("1. Save transactions in File");
+				System.out.println("2. Display all transaction Details");
+				System.out.println("3. Remove transaction");
+				System.out.println("4. Exit");
+				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 4) {
+					System.out.println("You selected option " + option);
+					break; // Exit loop if valid choice
+				} else {
+					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+					sc.next(); // Discard invalid input
+				} 
+			}
+			if(option==1)
+			{
+				 try {
+				        storage.saveTransactions(tran, filename); // This may throw IOException
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
+			}
+			else if(option==2)
+			{
+				try {
+			        storage.displayTransactions(filename); // This may throw IOException
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
+			}
+			else if(option==3)
+			{
+				try {
+			        storage.removeTransaction(transaction.getTransId(), filename); // This may throw IOException
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
+			}
+			else if(option==4)
+			{	
+				return;		
+			}
+		}
 	}
 }
 

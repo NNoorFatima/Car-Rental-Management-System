@@ -1,1 +1,2 @@
-0;toyota;yaria;2020;12;abc-123;false
+0;toyota;corolla;2020;41;akj;false
+1;kia;giki;0;21;asd;false
