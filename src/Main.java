@@ -11,6 +11,7 @@ public class Main {
 		 RMS renter_management= new RMS();
 		 CRMS rent_transactions= new CRMS(car_management,renter_management);
 		 FileManager myStorage=null;
+		 JBDCDemo mySqlstorage= null;
 		 int storage = 0;
 	     String carfilename="dataCar.txt";
 	     String renterfilename="dataRenter.txt";
@@ -40,6 +41,10 @@ public class Main {
 		 if(storage==1)
 		 {
 			 myStorage=new FileManager();
+		 }
+		 else if(storage==2)
+		 {
+			 mySqlstorage= new JBDCDemo();
 		 }
 		 
 		 //MAIN MENUUU
@@ -182,8 +187,10 @@ public class Main {
 					 int id= sc.nextInt();
 					 car_management.removeCar(id);
 				 }
-				 handleCarFile(car_type,carfilename,myStorage);
-				 
+				 if(storage==1)
+					 handleCarFile(car_type,carfilename,myStorage);
+				 else if(storage==2)
+					 handleCarMySQL(car_type,mySqlstorage);
 				 
 			 }
 			 
@@ -309,8 +316,11 @@ public class Main {
 					 int id= sc.nextInt();
 					 renter_management.removeRenter(id);
 				 }
-				 
-				 handleRenterFile(renter_type,renterfilename,myStorage);
+				 if(storage==1)
+					 handleRenterFile(renter_type,renterfilename,myStorage);
+				 else if(storage==2)
+					handleRenterMySQL(renter_type,mySqlstorage);
+					 
 			 }
 //========================================================================
 
@@ -362,8 +372,10 @@ public class Main {
 					 int car_id= sc.nextInt();
 					 rent_transactions.returnCar(renter_id, car_id);
 				 }
-				 
-				 handleTransactionFile(rent_transactions.getTransactions(),tranfilename,myStorage);
+				 if(storage==1)
+					 handleTransactionFile(rent_transactions.getTransactions(),tranfilename,myStorage);
+				 //else if(storage==2)
+					 //handleCarMySQL();
 			 }
 			 else if(choice==4)
 			 {
@@ -733,5 +745,100 @@ public class Main {
 	
 	
 	//CRUD SQL
+	public static void handleCarMySQL(Car car,JBDCDemo s)
+	{
+		if(car==null)
+			return;
+		int option=-1;
+		Scanner sc= new Scanner(System.in);
+		
+		while(true)
+		{
+			while (true) {
+				System.out.println("Choose option");
+				System.out.println("1. Save Car");
+				System.out.println("2. Update Car info");
+				System.out.println("3. Display all Car Details");
+				System.out.println("4. Remove Car");
+				System.out.println("5. Exit");
+				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
+					System.out.println("You selected option " + option);
+					break; // Exit loop if valid choice
+				} else {
+					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+					sc.next(); // Discard invalid input
+				} 
+			}
+			if(option==1)
+			{
+				s.saveCars(car);
+			}
+			else if(option==2)
+			{
+				s.updateCar();
+			}
+			else if(option==3)
+			{
+				s.displayCars();
+			}
+			else if(option==4)
+			{
+				s.removeCar();
+			}
+			else if(option==5)
+			{
+				return;
+			}
+		}
+	}
+	public static void handleRenterMySQL(Renter rent, JBDCDemo s)
+	{
+		if(rent==null)
+			return;
+		int option=-1;
+		Scanner sc= new Scanner(System.in);
+		
+		while(true)
+		{
+			while (true) {
+				System.out.println("Choose option");
+				System.out.println("1. Save Renter");
+				System.out.println("2. Update Renter info");
+				System.out.println("3. Display all Renter Details");
+				System.out.println("4. Remove Renter");
+				System.out.println("5. Exit");
+				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
+					System.out.println("You selected option " + option);
+					break; 
+				} else {
+					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+					sc.next();
+				} 
+			}
+			if(option==1)
+			{
+				s.saveRenters(rent);
+			}
+			else if(option==2)
+			{
+				s.updateRenter();
+			}
+			else if(option==3)
+			{
+				s.displayRenters();
+			}
+			else if(option==4)
+			{
+				s.removeRenter();
+			}
+			else if(option==5)
+			{
+				return;
+			}
+		}
+		
+	}
+	
+
 }
 
