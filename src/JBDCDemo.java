@@ -313,6 +313,25 @@ public class JBDCDemo {
 	}
 	public static void updateRenter(Renter rent)
 	{
-		
+		 try (Connection conn = DriverManager.getConnection(URL, username, password);
+		         Statement stmt = conn.createStatement()) 
+		 {
+			if (rent.getRentedCars() != null && !rent.getRentedCars().isEmpty()) 
+			{
+	            for (Car car : rent.getRentedCars()) {
+	                String insertCarRentedSQL = "INSERT INTO cars_rented (renterid, carid,brand) VALUES (" +
+	                                            rent.getRentID() + ", " + car.getID() + ", '"+ car.getBrand()+"')";
+	                stmt.executeUpdate(insertCarRentedSQL);
+	            }
+	            System.out.println("Cars rented by the renter added to cars_rented table.");
+	        } 
+			else 
+	            System.out.println("Renter has no rented cars.");
+		 } 
+		 catch (SQLException e) 
+		 {
+		        System.out.println("Error occurred while updating the renter.");
+		        e.printStackTrace();
+		 }
 	}
 }

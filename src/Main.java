@@ -646,8 +646,6 @@ public class Main {
 			return;
 		
 		Scanner sc= new Scanner(System.in);
-		
-		
 			if(option==1){
 				s.saveRenters(rent);
 			}
