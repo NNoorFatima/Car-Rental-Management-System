@@ -93,8 +93,6 @@ public class JBDCDemo {
 	            System.out.println("Error occurred while retrieving cars.");
 	            e.printStackTrace();
 		 }
-		 
-		 
 	}
 	public static void removeCar()
 	{
@@ -120,12 +118,12 @@ public class JBDCDemo {
 		 }
 		
 	}
-	public static void updateCar()
+	public static void updateCar(int id)
 	{
-		System.out.println("Choose the car which you want to update\n");
-		displayCars();
+//		System.out.println("Choose the car which you want to update\n");
+//		displayCars();
 		Scanner sc= new Scanner(System.in);
-		int choice = sc.nextInt();
+		int choice = id;
 		
 		System.out.println("What do you want to update?");
 		System.out.println("1. Brand");
@@ -178,8 +176,6 @@ public class JBDCDemo {
 	            System.out.println("Error occurred while retrieving cars.");
 	            e.printStackTrace();
 		 }
-		
-		
 	}
 	
 
@@ -257,10 +253,10 @@ public class JBDCDemo {
 		 }
 		
 	}
-	public static void updateRenter()
+	public static void updateRenter(int id)
 	{
-		System.out.println("Choose the renter which you want to update\n");
-		displayCars();
+//		System.out.println("Choose the renter which you want to update\n");
+//		displayCars();
 		Scanner sc= new Scanner(System.in);
 		int choice = sc.nextInt();
 		
@@ -314,5 +310,9 @@ public class JBDCDemo {
 	            System.out.println("Error occurred while retrieving renters.");
 	            e.printStackTrace();
 		 }
+	}
+	public static void updateRenter(Renter rent)
+	{
+		
 	}
 }

@@ -58,7 +58,7 @@ public class Main {
 			 System.out.println("2.Renter Management");
 			 System.out.println("3.Transactions");
 			 System.out.println("4.Exit\n");
-			 //System.out.println("Enter your choice:\n");
+			
 			 int choice= -1;
 			 //input validation 
 	            do {
@@ -79,6 +79,7 @@ public class Main {
 				 System.out.println("1.Add new cars");
 				 System.out.println("2.Display available cars");
 				 System.out.println("3.Remove Car");
+				 System.out.println("4.Update Car");
 				 
 				 int choice_1=-1;
 				 //validate input 
@@ -176,22 +177,43 @@ public class Main {
 						
 					 }
 					 
+					 if(storage==1)
+						 handleCarFile(car_type,carfilename,myStorage,1);
+					 else if(storage==2)
+						 handleCarMySQL(car_type,mySqlstorage,1);
+					 
 	 			 }
 				 else if(choice_1==2)
 				 {
+					 System.out.println("\nDisplaying cars from CRMS\n");
 					 car_management.displayCars();
+					 System.out.println("\nDisplaying cars from storage method\n");
+					 if(storage==1)
+						 handleCarFile(car_type,carfilename,myStorage,3);
+					 else if(storage==2)
+						 handleCarMySQL(car_type,mySqlstorage,3);
 				 }
 				 else if(choice_1==3)
 				 {
 					 System.out.println("Enter the id of the car you want to remove");
 					 int id= sc.nextInt();
 					 car_management.removeCar(id);
+					 car_type= car_management.getCars().get(id);
+					 if(storage==1)
+						 handleCarFile(car_type,carfilename,myStorage,4);
+					 else if(storage==2)
+						 handleCarMySQL(car_type,mySqlstorage,4);
+				 }	
+				 else if(choice_1==4)
+				 {
+					 System.out.println("Enter the id of the car you want to remove");
+					 int id= sc.nextInt();
+					 car_type= car_management.getCars().get(id);
+					 if(storage==1)
+						 handleCarFile(car_type,carfilename,myStorage,2);
+					 else if(storage==2)
+						 handleCarMySQL(car_type,mySqlstorage,2);
 				 }
-				 if(storage==1)
-					 handleCarFile(car_type,carfilename,myStorage);
-				 else if(storage==2)
-					 handleCarMySQL(car_type,mySqlstorage);
-				 
 			 }
 			 
 //========================================================================
@@ -202,22 +224,22 @@ public class Main {
 				 System.out.println("1.Add new renters");
 				 System.out.println("2.Display renter details");
 				 System.out.println("3.Remove renter");
-				
+				 System.out.println("4. Update cars rented in storage");
 				 //validate 
 				 int choice_2=-1;
 				 // Validate input for renter management menu
 			        do {
-			            System.out.println("Enter your choice (1-3):");
+			            System.out.println("Enter your choice (1-4):");
 			            while (!sc.hasNextInt()) {  // Check if the input is an integer
-			                System.out.println("Invalid input. Please enter a number between 1 and 3.");
+			                System.out.println("Invalid input. Please enter a number between 1 and 4.");
 			                sc.next();  // Discard the invalid input
 			            }
 			            choice_2 = sc.nextInt();
 
-			            if (choice_2 < 1 || choice_2 > 3) {
-			                System.out.println("Invalid choice. Please select a valid option (1-3).");
+			            if (choice_2 < 1 || choice_2 > 4) {
+			                System.out.println("Invalid choice. Please select a valid option (1-4).");
 			            }
-			        } while (choice_2 < 1 || choice_2 > 3);
+			        } while (choice_2 < 1 || choice_2 > 4);
 				 //done validation
 				 if(choice_2==1)
 				 {
@@ -246,10 +268,6 @@ public class Main {
 	
 						 System.out.println("Enter email");
 						 String email = sc.nextLine();
-	
-						/* System.out.println("Enter total rent fee");
-						 double t_rental_fee = sc.nextInt();
-						 sc.nextLine(); // Consume the newline character*/
 						 
 						 System.out.println("Enter phone number");
 						 String phone_no = sc.nextLine();
@@ -268,10 +286,6 @@ public class Main {
 	
 						 System.out.println("Enter email");
 						 String email = sc.nextLine();
-	
-						 /*System.out.println("Enter total rent fee");
-						 double t_rental_fee = sc.nextInt();
-						 sc.nextLine(); // Consume the newline character*/
 						 
 						 System.out.println("Enter phone number");
 						 String phone_no = sc.nextLine();
@@ -290,10 +304,6 @@ public class Main {
 	
 						 System.out.println("Enter email");
 						 String email = sc.nextLine();
-	
-					/*	 System.out.println("Enter total rent fee");
-						 double t_rental_fee = sc.nextInt();
-						 sc.nextLine();*/ // Consume the newline character
 						 
 						 System.out.println("Enter phone number");
 						 String phone_no = sc.nextLine();
@@ -304,23 +314,44 @@ public class Main {
 						 renter_type = new CorporateRenter(name,email,phone_no,add);
 						 renter_management.addRenters(renter_type);
 					 }
+					 if(storage==1)
+						 handleRenterFile(renter_type,renterfilename,myStorage,1);
+					 else if(storage==2)
+						 handleRenterMySQL(renter_type,mySqlstorage,1);
+						 
 					 
 				 }
 				 else if(choice_2==2)
 				 {
+					 System.out.println("Displaying cars from CRMS\n");
 					 renter_management.displayRenter();
+					 System.out.println("\nDisplaying cars from storage method\n");
+					 if(storage==1)
+						 handleRenterFile(renter_type,renterfilename,myStorage,3);
+					 else if(storage==2)
+						 handleRenterMySQL(renter_type,mySqlstorage,3);
 				 }
 				 else if(choice_2==3)
 				 {
 					 System.out.println("Enter the id of the car you want to remove");
 					 int id= sc.nextInt();
 					 renter_management.removeRenter(id);
+					 renter_type=renter_management.getRenters().get(id);
+					 if(storage==1)
+						 handleRenterFile(renter_type,renterfilename,myStorage,4);
+					 else if(storage==2)
+						 handleRenterMySQL(renter_type,mySqlstorage,4);
+				 } 
+				 else if(choice_2==4)
+				 {
+					 System.out.println("Enter the id of the car you want to update");
+					 int id= sc.nextInt(); 
+					 renter_type=renter_management.getRenters().get(id);
+					 if(storage==1)
+						 handleRenterFile(renter_type,renterfilename,myStorage,2);
+					 else if(storage==2)
+						 handleRenterMySQL(renter_type,mySqlstorage,2);
 				 }
-				 if(storage==1)
-					 handleRenterFile(renter_type,renterfilename,myStorage);
-				 else if(storage==2)
-					handleRenterMySQL(renter_type,mySqlstorage);
-					 
 			 }
 //========================================================================
 
@@ -354,6 +385,7 @@ public class Main {
 				 }
 				 else if(choice_3==2)
 				 {
+					 System.out.println("\nDisplaying information from CRMS\n");
 					 rent_transactions.displayRentalDetails();
 				 }
 				 else if (choice_3==3)
@@ -371,202 +403,71 @@ public class Main {
 					 System.out.println("Enter the id of the car you want to return");
 					 int car_id= sc.nextInt();
 					 rent_transactions.returnCar(renter_id, car_id);
+					
 				 }
-				 if(storage==1)
-					 handleTransactionFile(rent_transactions.getTransactions(),tranfilename,myStorage);
-				 //else if(storage==2)
-					 //handleCarMySQL();
 			 }
 			 else if(choice==4)
 			 {
 				 break;
 			 }
 		 }
-		 
 	}
-
-	
 	//CRUD FILE 
-	public static void handleRenterFile(Renter rent, String filename, FileManager storage)
+	public static void handleRenterFile(Renter rent, String filename, FileManager storage,int option)
 	{
-		if(rent==null)
+		if(rent==null && option==1)
 			return;
-		int option=-1;
 		Scanner sc= new Scanner(System.in);
-		
-		while(true)
-		{
-			while (true) {
-				System.out.println("Choose option");
-				System.out.println("1. Save Renter in File");
-				System.out.println("2. Update Renter info");
-				System.out.println("3. Display all Renter Details");
-				System.out.println("4. Remove Renter");
-				System.out.println("5. Exit");
-				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
-					System.out.println("You selected option " + option);
-					break;
-				} else {
-					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-					sc.next();
-				} 
-			}
 			if(option==1)
 			{
-				try 
-				 {
+				try {
 				        storage.saveRenter(rent, filename); // This may throw IOException
 				 } 
-				 catch (IOException e) 
-				 {
+				 catch (IOException e) {
 				        System.out.println("An error occurred while saving the renter data: " + e.getMessage());
 				 }
 			}
 			else if(option==2)
-			{
-				Renter renter_type=null;
-				System.out.println("Enter if its\n a.Regular Renter\n b.Frequent Renter \n c.Corporate Renter ");
-				 char ch;
-				 do {
-			            System.out.println("Enter your choice (a, b, or c):");
-			            String input = sc.next();  // Get user's input as a String
-	
-			            if (input.length() == 1) {  // Ensure input is a single character
-			                ch = input.charAt(0);  // Get the first character
-			                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
-			            } else {
-			                ch = 'x';  // Invalid input flag
-			            }
-	
-			            if (ch != 'a' && ch != 'b' && ch != 'c') {
-			                System.out.println("Invalid choice. Please enter 'a' for Regular Renter, 'b' for Frequent Renter, or 'c' for Corporate Renter.");
-			            }
-			        } while (ch != 'a' && ch != 'b' && ch != 'c');
-				 if(ch=='a')
-				 {
-					 sc.nextLine();
-					 System.out.println("Enter name");
-					 String name = sc.nextLine();
-	
-					 System.out.println("Enter email");
-					 String email = sc.nextLine();
-					 
-					 System.out.println("Enter phone number");
-					 String phone_no = sc.nextLine();
-					 
-					 System.out.println("Enter address");
-					 String add = sc.nextLine();
-	
-					 renter_type = new RegularRenter(name,email,phone_no,add);
-				 }
-				 else if(ch=='b')
-				 {
-					 sc.nextLine();
-					 System.out.println("Enter name");
-					 String name = sc.nextLine();
-	
-					 System.out.println("Enter email");
-					 String email = sc.nextLine();
-	
-					
-					 System.out.println("Enter phone number");
-					 String phone_no = sc.nextLine();
-					 
-					 System.out.println("Enter address");
-					 String add = sc.nextLine();
-	
-					 renter_type = new FrequentRenter(name,email,phone_no,add);
-				 }
-				 else if(ch=='c')
-				 {
-					 sc.nextLine();
-					 System.out.println("Enter name");
-					 String name = sc.nextLine();
-	
-					 System.out.println("Enter email");
-					 String email = sc.nextLine();
-	
-					 System.out.println("Enter phone number");
-					 String phone_no = sc.nextLine();
-					 
-					 System.out.println("Enter address");
-					 String add = sc.nextLine();
-	
-					 renter_type = new CorporateRenter(name,email,phone_no,add);
-				 }
-				 int id= rent.getRentID();
-					try 
-					{
-					    storage.updateRenter(id, renter_type, filename);
-					} 
-					catch (IOException e) 
-					{
-					    System.out.println("Error updating the renter: " + e.getMessage());
-					    e.printStackTrace();
-					}
-					
+			{				
+				//this is where when cars are rented so the update is made
+				try{
+					storage.updateRenter( rent, filename);	
+				}
+				catch (IOException e){
+					System.out.println("An error occurred while displaying the renter data: " + e.getMessage());
+				}
 			}
 			else if(option ==3)
 			{
-				try 
-				 {
+				try {
 					 storage.displayRenters(filename); // This may throw IOException
 				 } 
-				 catch (IOException e) 
-				 {
+				 catch (IOException e) {
 				        System.out.println("An error occurred while displaying the renter data: " + e.getMessage());
 				 }
 			}
 			else if(option==4)
 			{
-				try 
-				{
+				try {
 				    storage.removeRenter(rent.getRentID(), filename); // Remove the car from the file
 				} 
-				catch (IOException e) 
-				{
+				catch (IOException e) {
 				    System.out.println("Error occurred while removing the renter: " + e.getMessage());
 				}	
 			}
-			else if(option==5)
-			{
-				return;
-			}
-		}
 	}
 	
-	public static void handleCarFile(Car car,String filename,FileManager storage)
+	public static void handleCarFile(Car car,String filename,FileManager storage,int option)
 	{
-		if(car==null)
+		if(car==null && option==1)
 			return;
-		int option=-1;
-		Scanner sc= new Scanner(System.in);
-		
-		while(true)
-		{
-			while (true) {
-				System.out.println("Choose option");
-				System.out.println("1. Save Car in File");
-				System.out.println("2. Update Car info");
-				System.out.println("3. Display all Car Details");
-				System.out.println("4. Remove Car");
-				System.out.println("5. Exit");
-				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
-					System.out.println("You selected option " + option);
-					break; // Exit loop if valid choice
-				} else {
-					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-					sc.next(); // Discard invalid input
-				} 
-			}
+		Scanner sc= new Scanner(System.in);		
 			if(option==1)
 			{
-				 try 
-				 {
-				        storage.saveCars(car, filename); // This may throw IOException
+				 try {
+				        storage.saveCars(car, filename); 
 				 } 
-				 catch (IOException e) 
-				 {
+				 catch (IOException e) {
 				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
 				 }
 			}
@@ -647,12 +548,10 @@ public class Main {
 				 }
 	
 				int id= car.getID();
-				try 
-				{
+				try {
 				    storage.updateCar(id, car_type, filename);
 				} 
-				catch (IOException e) 
-				{
+				catch (IOException e) {
 				    System.out.println("Error updating the car: " + e.getMessage());
 				    e.printStackTrace();
 				}
@@ -660,12 +559,10 @@ public class Main {
 			}
 			else if(option==3)
 			{
-				 try 
-				 {
+				 try {
 					 storage.displayCars(filename); // This may throw IOException
 				 } 
-				 catch (IOException e) 
-				 {
+				 catch (IOException e) {
 				        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
 				 }
 			}
@@ -678,37 +575,16 @@ public class Main {
 				    System.out.println("Error occurred while removing the car: " + e.getMessage());
 				}
 			}
-			else if(option==5)
-			{
-				return;
-			}
-		}
 	}
 	
-	public static void handleTransactionFile(List<rental_transaction> tran, String filename, FileManager storage)
+	public static void handleTransactionFile(List<rental_transaction> tran, String filename, FileManager storage,int option )
 	{
 		if(tran==null)
 			return;
-		int option=-1;
+		
 		Scanner sc= new Scanner(System.in);
 		
 		rental_transaction transaction = tran.get(tran.size() - 1);
-		while(true)
-		{
-			while (true) {
-				System.out.println("Choose option");
-				System.out.println("1. Save transactions in File");
-				System.out.println("2. Display all transaction Details");
-				System.out.println("3. Remove transaction");
-				System.out.println("4. Exit");
-				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 4) {
-					System.out.println("You selected option " + option);
-					break; // Exit loop if valid choice
-				} else {
-					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-					sc.next(); // Discard invalid input
-				} 
-			}
 			if(option==1)
 			{
 				 try {
@@ -736,93 +612,47 @@ public class Main {
 				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
 				 }
 			}
-			else if(option==4)
-			{	
-				return;		
-			}
-		}
+		
 	}
 
 	
 	
 	//CRUD SQL
-	public static void handleCarMySQL(Car car,JBDCDemo s)
+	public static void handleCarMySQL(Car car,JBDCDemo s,int option)
 	{
-		if(car==null)
+		if(car==null && option==1)
 			return;
-		int option=-1;
 		Scanner sc= new Scanner(System.in);
-		
-		while(true)
-		{
-			while (true) {
-				System.out.println("Choose option");
-				System.out.println("1. Save Car");
-				System.out.println("2. Update Car info");
-				System.out.println("3. Display all Car Details");
-				System.out.println("4. Remove Car");
-				System.out.println("5. Exit");
-				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
-					System.out.println("You selected option " + option);
-					break; // Exit loop if valid choice
-				} else {
-					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-					sc.next(); // Discard invalid input
-				} 
-			}
-			if(option==1)
-			{
+			if(option==1){
 				s.saveCars(car);
 			}
-			else if(option==2)
-			{
-				s.updateCar();
+			else if(option==2){
+				s.updateCar(car.getID());
 			}
-			else if(option==3)
-			{
+			else if(option==3){
 				s.displayCars();
 			}
-			else if(option==4)
-			{
+			else if(option==4){
 				s.removeCar();
 			}
-			else if(option==5)
-			{
+			else if(option==5){
 				return;
 			}
-		}
+		
 	}
-	public static void handleRenterMySQL(Renter rent, JBDCDemo s)
+	public static void handleRenterMySQL(Renter rent, JBDCDemo s,int option)
 	{
-		if(rent==null)
+		if(rent==null && option ==1)
 			return;
-		int option=-1;
+		
 		Scanner sc= new Scanner(System.in);
 		
-		while(true)
-		{
-			while (true) {
-				System.out.println("Choose option");
-				System.out.println("1. Save Renter");
-				System.out.println("2. Update Renter info");
-				System.out.println("3. Display all Renter Details");
-				System.out.println("4. Remove Renter");
-				System.out.println("5. Exit");
-				if (sc.hasNextInt() && (option = sc.nextInt()) >= 1 && option <= 5) {
-					System.out.println("You selected option " + option);
-					break; 
-				} else {
-					System.out.println("Invalid choice. Please enter a number between 1 and 5.");
-					sc.next();
-				} 
-			}
-			if(option==1)
-			{
+		
+			if(option==1){
 				s.saveRenters(rent);
 			}
-			else if(option==2)
-			{
-				s.updateRenter();
+			else if(option==2){
+				s.updateRenter(rent);
 			}
 			else if(option==3)
 			{
@@ -836,7 +666,7 @@ public class Main {
 			{
 				return;
 			}
-		}
+		
 		
 	}
 	
