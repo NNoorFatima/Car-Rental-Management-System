@@ -1,2 +1,1 @@
-0;toyota;corolla;2020;12;abs-12;false
-1;kia;giki;3030;32;kjsdf-;false
+0;toyota;corolla;2002;34;abs-123;false

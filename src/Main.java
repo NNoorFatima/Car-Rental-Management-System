@@ -318,8 +318,6 @@ public class Main {
 						 handleRenterFile(renter_type,renterfilename,myStorage,1);
 					 else if(storage==2)
 						 handleRenterMySQL(renter_type,mySqlstorage,1);
-						 
-					 
 				 }
 				 else if(choice_2==2)
 				 {
@@ -382,19 +380,29 @@ public class Main {
 				 if(choice_3==1)
 				 {
 					 rent_transactions.rentCar();
+					 if(storage==1)
+						 handleTransactionFile(rent_transactions,tranfilename,myStorage,1);
+					 
 				 }
 				 else if(choice_3==2)
 				 {
 					 System.out.println("\nDisplaying information from CRMS\n");
 					 rent_transactions.displayRentalDetails();
+					 System.out.println("\nDisplaying information from storage method\n");
+					 if(storage==1)
+						 handleTransactionFile(rent_transactions,tranfilename,myStorage,2);
 				 }
 				 else if (choice_3==3)
 				 {
 					 rent_transactions.rentCalculation();
+					 if(storage==1) //adds in file the damage cost + total rental cost 
+						 handleTransactionFile(rent_transactions,tranfilename,myStorage,4);
 				 }
 				 else if(choice_3==4)
 				 {
 					 rent_transactions.costWithInsurance();
+					 if(storage==1)
+						 handleTransactionFile(rent_transactions,tranfilename,myStorage,3);
 				 }
 				 else if(choice_3==5)
 				 {
@@ -403,7 +411,9 @@ public class Main {
 					 System.out.println("Enter the id of the car you want to return");
 					 int car_id= sc.nextInt();
 					 rent_transactions.returnCar(renter_id, car_id);
-					
+					 if(storage==1)
+						 handleTransactionFile(rent_transactions,tranfilename,myStorage,5);
+					 
 				 }
 			 }
 			 else if(choice==4)
@@ -577,15 +587,13 @@ public class Main {
 			}
 	}
 	
-	public static void handleTransactionFile(List<rental_transaction> tran, String filename, FileManager storage,int option )
+	public static void handleTransactionFile(CRMS tran, String filename, FileManager storage,int option )
 	{
 		if(tran==null)
 			return;
 		
 		Scanner sc= new Scanner(System.in);
-		
-		rental_transaction transaction = tran.get(tran.size() - 1);
-			if(option==1)
+			if(option==1) //save basic transaction 
 			{
 				 try {
 				        storage.saveTransactions(tran, filename); // This may throw IOException
@@ -594,7 +602,7 @@ public class Main {
 				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
 				 }
 			}
-			else if(option==2)
+			else if(option==2)//display what is stored in file 
 			{
 				try {
 			        storage.displayTransactions(filename); // This may throw IOException
@@ -603,10 +611,28 @@ public class Main {
 				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
 				 }
 			}
-			else if(option==3)
+			else if(option==3)//add insurance
 			{
 				try {
-			        storage.removeTransaction(transaction.getTransId(), filename); // This may throw IOException
+			        storage.updateInsuranceTransactions(tran, filename); // This may throw IOException
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
+			}
+			else if(option==4)//add damage cost + rental cost
+			{
+				try {
+			        storage.updateDamageCostTransactions(tran, filename); // This may throw IOException
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
+			}	
+			else if(option==5)
+			{
+				try {
+			        storage.removeTransaction(tran, filename); // This may throw IOException
 				 } 
 				 catch (IOException e) {
 				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
@@ -665,7 +691,8 @@ public class Main {
 				return;
 			}
 	}
-	
+
+	//CRUD 
 
 }
 

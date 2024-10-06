@@ -261,19 +261,68 @@ public class FileManager
 	        }	
 	}
 	//TRANSACTIONS
-	public static void saveTransactions(List<rental_transaction> tran, String filename) throws IOException
+	public static void saveTransactions(CRMS tran, String filename) throws IOException
 	{
-	    if (tran != null && !tran.isEmpty()) 
+	    if (tran != null && !tran.getTransactions().isEmpty()) 
 	    {
 	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
 	        {
-	            rental_transaction a = tran.get(tran.size() - 1); // Get the last transaction
+	            rental_transaction a = tran.getTransactions().get(tran.getTransactions().size()-1); // Get the last transaction
 	            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
 	                         a.getCar_type() + ";" + a.getRenter_type());
+	            
 	            writer.newLine(); 
 	        }
 	    }
 	}
+	
+	public static void updateInsuranceTransactions(CRMS tran, String filename) throws IOException
+	{
+		if (tran != null && !tran.getTransactions().isEmpty()) 
+	    {
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
+	        {
+	        	CMS b=tran.getCar_management();
+	        	RMS c=tran.getRenter_management();
+	            for(rental_transaction a :tran.getTransactions()) // Get the last transaction
+	            {
+	            	Car ab= b.getCars().get(a.getCarId());
+		            String insurance=(ab.isInsurable())?"Insured":"Not insured";
+		            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
+		                         a.getCar_type() + ";" + a.getRenter_type()+";"+insurance);
+		            
+		            writer.newLine(); 
+	            }
+	        }
+	    }
+	}
+	
+	public static void updateDamageCostTransactions(CRMS tran, String filename) throws IOException
+	{
+		if (tran != null && !tran.getTransactions().isEmpty()) 
+	    {
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
+	        {
+	        	CMS b=tran.getCar_management();
+	        	RMS c=tran.getRenter_management();
+	        	
+	            for(rental_transaction a :tran.getTransactions()) // Get the last transaction
+	            {
+	            	Car ab= b.getCars().get(a.getCarId());
+		            Renter ba=c.getRenters().get(a.getRenterId());
+		            double damagecost= tran.calculateDamageCost(ba, ab);
+		            double total_rental_cost=ba.getTotal_rent_fee();
+		            String insurance=(ab.isInsurable())?"Insured":"Not insured";
+		            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
+		                         a.getCar_type() + ";" + a.getRenter_type()+";"+insurance+";"+Double.toString(damagecost)+";"
+		                        		 +Double.toString(total_rental_cost));
+		            
+		            writer.newLine(); 
+	            }
+	        }
+	    }
+	}
+	
 	public static void displayTransactions(String filename)throws IOException 
 	{
 		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) 
@@ -289,7 +338,19 @@ public class FileManager
 	    			System.out.println("Car ID: " + transData[1]);
 	    			System.out.println("Renter ID: " + transData[2]);
 	    			System.out.println("Car Type: " + transData[3]);
-	    			System.out.println("Renter Type: " + transData[4]+ "\n");
+	    			System.out.println("Renter Type: " + transData[4]);
+	    			if(transData.length>5)
+	    				System.out.println("Insurance: " + transData[5]);
+	    			else 
+	    				System.out.println("Insurance: N/a");
+	    			if(transData.length>6)
+	    				System.out.println("Damage Cost: " + transData[6]);
+	    			else 
+	    				System.out.println("Damage Cost: N/a");
+	    			if(transData.length>7)
+	    				System.out.println("Total Rental Fee: "+ transData[7]+"\n");
+	    			else 
+	    				System.out.println("Total Rental Fee: N/a");
 	    		line =reader.readLine();
 	    	}
 	    }
@@ -297,38 +358,54 @@ public class FileManager
 	        System.out.println("Error reading file: " + e.getMessage());
 	    }
 	}
-	public static void removeTransaction(int tranid,String filename)throws IOException 
+	public static void removeTransaction(CRMS tran,String filename)throws IOException 
 	{
-		File inputFile = new File(filename);
-	    File tempFile = new File("tempFile.txt");
-
-	    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-	         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) 
-	    {
-
-	        String line;
-	        boolean found = false;
-
-	        while ((line = reader.readLine()) != null) 
-	        {
-	            if (Integer.parseInt(line.split(";")[0]) != tranid) {
-	                writer.write(line);
-	                writer.newLine();
-	            } 
-	            else 
-	            	found = true; 
-	            
+		if (tran == null || tran.getTransactions().isEmpty()) {
+	        return; // No transactions to process
+	    }
+	    
+	    // Step 1: Read all the transactions from the file
+	    List<String> allTransactions = new ArrayList<>();
+	    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+	        String line = reader.readLine();
+	        while (line != null) {
+	            allTransactions.add(line); // Store all lines (transactions) from the file
+	            line = reader.readLine();
 	        }
-	        
-	        if (found) 
-	        	System.out.println("Transaction with ID " + tranid + " removed.");
-	        else 
-	        	System.out.println("Transaction with ID " + tranid + " not found.");
 	    }
 
-	    if (!inputFile.delete() || !tempFile.renameTo(inputFile)) 
-	    {
-	        System.out.println("File update failed.");
+	    // Step 2: Check each transaction in the file, compare with tran's transactions, and remove missing ones
+	    List<String> updatedTransactions = new ArrayList<>();
+	    
+	    // Get list of transactions from the CRMS object
+	    List<rental_transaction> currentTransactions = tran.getTransactions();
+	    
+	    for (String fileTransaction : allTransactions) {
+	        String[] transData = fileTransaction.split(";");
+	        int transId = Integer.parseInt(transData[0]); // Extract transaction ID from the file
+
+	        // Check if the transaction ID exists in the current transaction list from CRMS
+	        boolean transactionFound = false;
+	        for (rental_transaction trans : currentTransactions) {
+	            if (trans.getTransId() == transId) {
+	                transactionFound = true;
+	                break;
+	            }
+	        }
+
+	        // If transaction is found in CRMS, keep it, otherwise it's removed
+	        if (transactionFound) {
+	            updatedTransactions.add(fileTransaction);
+	        }
 	    }
+
+	    // Step 3: Write the updated list of transactions back to the file
+	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+	        for (String transaction : updatedTransactions) {
+	            writer.write(transaction);
+	            writer.newLine(); // Write each transaction back to the file
+	        }
+	    }
+		
 	}
 }
