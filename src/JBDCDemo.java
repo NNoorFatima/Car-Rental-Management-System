@@ -42,14 +42,14 @@ public class JBDCDemo {
 	public static void saveCars(Car car)
 	{
 	    int statusValue = car.getStatus()? 1 : 0; // Assuming "Available" means true, otherwise false
-	    String sql = "INSERT INTO car (brand, model, year, fee, status,type) VALUES ('"
+	    String sql = "INSERT INTO car (brand, model, year, fee, status,type,plate) VALUES ('"
 	                 + car.getBrand() + "', '" 
 	                 + car.getModel() + "', " 
 	                 + car.getYear() + ", " 
 	                 + car.getFee() + ", " 
 	                 + statusValue + ",'"
 	    			 + car.displayCarType()+"','"
-	    			 +car.getPlate();
+	    			 +car.getPlate()+"')";
 	    try (Connection conn = DriverManager.getConnection(URL, username, password);
 	         Statement stmt = conn.createStatement()) {
 
@@ -186,11 +186,13 @@ public class JBDCDemo {
 	//RENTER
 	public static void saveRenters(Renter rent)
 	{
-	    String sql = "INSERT INTO renter (name, email, address, phone_no) VALUES ('"
+	    String sql = "INSERT INTO renter (name, email, address, phone_no,type,total_rent_fee) VALUES ('"
 	                 + rent.getName() + "', '" 
 	                 + rent.getEmail()+ "', '" 
 	                 + rent.getAddress() + "', '" 
-	                 + rent.getPh_no()+ "')"; 
+	                 + rent.getPh_no()+ "','"
+	                 +rent.displayRenterType()+"',"
+	                 +rent.getTotal_rent_fee()+")";
 	    try (Connection conn = DriverManager.getConnection(URL, username, password);
 	         Statement stmt = conn.createStatement()) {
 
@@ -217,13 +219,16 @@ public class JBDCDemo {
 	            String email = renterRs.getString("email");
 	            String address = renterRs.getString("address");
 	            String phone_no = renterRs.getString("phone_no");
+	            String type = renterRs.getString("type");
+	            Double total_rent_fee= renterRs.getDouble("total_rent_fee");
 
 	            // Print the renter data
 	            System.out.println("ID: " + id +
 	                               "\nName: " + name +
 	                               "\nEmail: " + email +
 	                               "\nAddress: " + address +
-	                               "\nPhone_no: " + phone_no);
+	                               "\nPhone_no: " + phone_no+
+	            					"\nTotal_rent_fee: "+total_rent_fee);
 
 	            // Check if the renter has any rented cars
 	            String carsSql = "SELECT carid, brand FROM cars_rented WHERE renterid = " + id;

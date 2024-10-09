@@ -664,7 +664,8 @@ public class Main {
 	                	car = new SUV(brand, model, year, plate, status,fee ); 
 	                else if(type != null && type.equals("Luxury Car"))
 	                	car = new LuxuryCar(brand, model, year, plate, status,fee ); 
-	                crms.getCar_management().addCars(car);; 
+	                if(car!=null)
+	                	crms.getCar_management().addCars(car);; 
 	            }
 	        }
 	    } 
@@ -694,7 +695,8 @@ public class Main {
 	                	renter= new FrequentRenter( name, email, address, phone);
 	                else if(type != null && type.equals("Corporate Renter"))
 	                	renter= new CorporateRenter(name, email, address, phone);
-	                crms.getRenter_management().addRenters(renter); 
+	                if(renter!=null)
+	                	crms.getRenter_management().addRenters(renter); 
 	            }
 	        }
 	    } 
@@ -833,7 +835,8 @@ public class Main {
                 {
                 	car = new LuxuryCar(brand, model, year, plate, status,fee ); 
                 }
-                crms.getCar_management().addCars(car);; 
+                if(car!=null)
+                	crms.getCar_management().addCars(car);; 
             }
          
         //RENTER
@@ -862,6 +865,8 @@ public class Main {
                 {
                 	rent = new CorporateRenter(name,email,address,phone_no ); 
                 }
+                if(rent!=null)
+                {
                 crms.getRenter_management().addRenters(rent);; 
                 
                 stmtrentedCars = conn.createStatement();
@@ -885,6 +890,7 @@ public class Main {
                 }
                 rent.setRentedCars(rentedCars);
                 rsCars.close();
+                }
             }           
         } 
         catch (Exception e) {
