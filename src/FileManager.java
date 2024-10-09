@@ -3,6 +3,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 public class FileManager 
 {
 	FileManager()
@@ -87,6 +88,45 @@ public class FileManager
 	        System.out.println("File update failed.");
 	    }
 	}
+	public static void updateCar(Car car, String filename) throws IOException
+	{
+	    File tempFile = new File("tempfile.txt");
+	    
+	    try (BufferedReader br = new BufferedReader(new FileReader(filename));
+	         BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
+	        
+	        String line;
+	        while ((line = br.readLine()) != null)
+	        {
+	            String[] carData = line.split(";");  
+	            int fileCarId = Integer.parseInt(carData[0]);  
+	            boolean fileStatus = Boolean.parseBoolean(carData[5]);    
+	            boolean updated = false;
+	            
+	            if (car.getID() == fileCarId)
+	            {
+	            	boolean crmsSt = car.getStatus();
+	            	if (fileStatus != crmsSt) 
+	            	{
+	            		carData[4] = String.valueOf(crmsSt);  
+	            		updated = true;
+	            	}	 
+	            }
+	            
+	            if (updated) 
+	                System.out.println("Car status updated in the file.");
+	            bw.write(String.join(",", carData) + "\n");
+	        }
+	    }
+	    catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    if (tempFile.renameTo(new File(filename)))
+	        System.out.println("File successfully updated.");
+	    else 
+	    	System.out.println("Error updating file.");
+	    
+	}
 
 	//RENTER
 	public static void saveRenter(Renter a,String filename) throws IOException {
@@ -115,7 +155,7 @@ public class FileManager
 	    			System.out.println("Renter_Type: " + renterData[5]+ "\n");
 	    			if (renterData.length > 6) {
 	    		        System.out.println("Cars rented by " + renterData[1] + ":");
-	    		        for (int i = 5; i < renterData.length; i += 2)
+	    		        for (int i = 6; i < renterData.length; i += 2)
 	    		        {
 	    		            if (i + 1 < renterData.length) 
 	    		            {
@@ -169,8 +209,6 @@ public class FileManager
 	{
 		 List<String> renters = new ArrayList<>();
 	        boolean found = false;
-
-	        // Read the file and load renters into a list
 	        try (BufferedReader br = new BufferedReader(new FileReader(filename)))
 	        {
 	            String line;

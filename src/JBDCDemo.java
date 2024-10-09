@@ -84,13 +84,13 @@ public class JBDCDemo {
 	                String plate= rs.getString("plate");	
 	                // Print the data (you can format this as needed)
 	                System.out.println("ID: " + id +
-	                                   ", Brand: " + brand +
-	                                   ", Model: " + model +
-	                                   ", Year: " + year +
-	                                   ", Fee: " + fee +
-	                                   ", Status: " + (status == 1 ? "Available" : "Unavailable")+
-	                					",Type: "+ type+
-	                					",Plate: "+plate);	            }
+	                                   "\nBrand: " + brand +
+	                                   "\nModel: " + model +
+	                                   "\nYear: " + year +
+	                                   "\nFee: " + fee +
+	                                   "\nStatus: " + (status == 1 ? "Available" : "Unavailable")+
+	                                   "\nType: "+ type+
+	                				   "\nPlate: "+plate);	            }
 
 	        } 
 		 catch (SQLException e) {
@@ -98,12 +98,9 @@ public class JBDCDemo {
 	            e.printStackTrace();
 		 }
 	}
-	public static void removeCar()
+	public static void removeCar(int id)
 	{
-		System.out.println("Among all the cars below, chose the id of the car you want to remove\n");
-		displayCars();
-		Scanner sc= new Scanner(System.in);
-		int id= sc.nextInt();
+		
 		String sql= "DELETE FROM car WHERE carid= "+id;
 		
 		 try (Connection conn = DriverManager.getConnection(URL, username, password);
@@ -122,66 +119,96 @@ public class JBDCDemo {
 		 }
 		
 	}
-	public static void updateCar(int id)
-	{
-//		System.out.println("Choose the car which you want to update\n");
-//		displayCars();
-		Scanner sc= new Scanner(System.in);
-		int choice = id;
-		
-		System.out.println("What do you want to update?");
-		System.out.println("1. Brand");
-		System.out.println("2. Model");
-		System.out.println("3. Fee");
-		System.out.println("4. Year");
-		int option = sc.nextInt();
-		sc.nextLine();
-		String sql="";
-		if(option==1)
-		{
-			System.out.println("Enter the new brand name");
-			String a= sc.nextLine();  
-			sql="UPDATE car SET brand = '"+a+"' WHERE carid ="+choice;
-		}
-		else if(option==2)
-		{
-			System.out.println("Enter the new model name");
-			String a= sc.nextLine();  
-			sql="UPDATE car SET model = '"+a+"' WHERE carid ="+choice;
-		}
-		else if(option==3)
-		{
-			System.out.println("Enter the new rent fee ");
-			int a= sc.nextInt();  
-			sc.nextLine();
-			sql="UPDATE car SET fee = '"+a+"' WHERE carid ="+choice;
-		}
-		else if(option==4)
-		{
-			System.out.println("Enter the new year");
-			int a= sc.nextInt();  
-			sc.nextLine();
-			sql="UPDATE car SET year = '"+a+"' WHERE carid ="+choice;
-		}
-		
-		
-		
-		 try (Connection conn = DriverManager.getConnection(URL, username, password);
-	             Statement stmt = conn.createStatement())
-		 {
-			 int Affected = stmt.executeUpdate(sql);
-			 if(Affected>0)
-				 System.out.println("Car with id " + choice +" has been updated\n");
-			 else
-				 System.out.println("No car with id "+ choice +" was found\n");
-
-	     } 
-		 catch (SQLException e) {
-	            System.out.println("Error occurred while retrieving cars.");
-	            e.printStackTrace();
-		 }
-	}
+//	public static void updateCar(int id)
+//	{
+////		System.out.println("Choose the car which you want to update\n");
+////		displayCars();
+//		Scanner sc= new Scanner(System.in);
+//		int choice = id;
+//		
+//		System.out.println("What do you want to update?");
+//		System.out.println("1. Brand");
+//		System.out.println("2. Model");
+//		System.out.println("3. Fee");
+//		//System.out.println("4. Year");
+//		int option = sc.nextInt();
+//		sc.nextLine();
+//		String sql="";
+//		if(option==1)
+//		{
+//			System.out.println("Enter the new brand name");
+//			String a= sc.nextLine();  
+//			sql="UPDATE car SET brand = '"+a+"' WHERE carid ="+choice;
+//		}
+//		else if(option==2)
+//		{
+//			System.out.println("Enter the new model name");
+//			String a= sc.nextLine();  
+//			sql="UPDATE car SET model = '"+a+"' WHERE carid ="+choice;
+//		}
+//		else if(option==3)
+//		{
+//			System.out.println("Enter the new rent fee ");
+//			int a= sc.nextInt();  
+//			sc.nextLine();
+//			sql="UPDATE car SET fee = '"+a+"' WHERE carid ="+choice;
+//		}
+////		else if(option==4)
+////		{
+////			System.out.println("Enter the new year");
+////			int a= sc.nextInt();  
+////			sc.nextLine();
+////			sql="UPDATE car SET year = '"+a+"' WHERE carid ="+choice;
+////		}
+//		
+//		
+//		
+//		 try (Connection conn = DriverManager.getConnection(URL, username, password);
+//	             Statement stmt = conn.createStatement())
+//		 {
+//			 int Affected = stmt.executeUpdate(sql);
+//			 if(Affected>0)
+//				 System.out.println("Car with id " + choice +" has been updated\n");
+//			 else
+//				 System.out.println("No car with id "+ choice +" was found\n");
+//
+//	     } 
+//		 catch (SQLException e) {
+//	            System.out.println("Error occurred while retrieving cars.");
+//	            e.printStackTrace();
+//		 }
+//	}
 	
+
+	public static void updateCar(Car car)
+	{
+	    try (Connection conn = DriverManager.getConnection(URL, username, password);
+	         Statement stmt = conn.createStatement()) 
+	    {
+	        String query = "SELECT carid, status FROM car WHERE carid = " + car.getID();
+	        ResultSet rs = stmt.executeQuery(query);
+	        if (rs.next()) 
+	        {
+	            boolean dbSt = rs.getBoolean("status");
+	            boolean crmsSt = car.getStatus();
+
+	            if (dbSt != crmsSt)
+	            {
+	                String updateSQL = "UPDATE car SET status = " + crmsSt + " WHERE carid = " + car.getID();
+	                stmt.executeUpdate(updateSQL);
+	                System.out.println("Car ID status updated in MySQL.");
+	            } 
+	            else 
+	                System.out.println("No status change for Car ID " + car.getID());	            
+	        }
+	        rs.close();
+	    } 
+	    catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
 
 	//RENTER
 	public static void saveRenters(Renter rent)
@@ -258,13 +285,9 @@ public class JBDCDemo {
 	        e.printStackTrace();
 	    }
 	}
-	public static void removeRenter()
+	public static void removeRenter(int id)
 	{
-		System.out.println("Among all the renters below, chose the id of the renter you want to remove\n");
-		displayRenters();
-		Scanner sc= new Scanner(System.in);
-		int id= sc.nextInt();
-		String sql= "DELETE FROM renter WHERE carid= "+id;
+		String sql= "DELETE FROM renter WHERE renterid= "+id;
 		
 		 try (Connection conn = DriverManager.getConnection(URL, username, password);
 	             Statement stmt = conn.createStatement())

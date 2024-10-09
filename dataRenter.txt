@@ -1,2 +1,1 @@
-1;noor;noor.com;0400;g10;Regular Renter;sfad;1
-2;sarsa;saraa;g12;035;Regular Renter
+1;noo;noor.cmo;h11;134;Regular Renter;toyota;1

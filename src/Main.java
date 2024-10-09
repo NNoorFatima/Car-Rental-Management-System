@@ -49,11 +49,15 @@ public class Main {
 		 {
 			 myStorage=new FileManager();
 			 try {
+				 strtid= initializeIdsFromFileMin(carfilename); //min id
+				 Car.setStartingId(strtid); 
+				 strtid=initializeIdsFromFileMin(renterfilename);	//min id
+				 Renter.setStartingId(strtid);
 				 loadDataIntoCRMS(rent_transactions,carfilename,renterfilename,tranfilename);
-				 strtid= initializeIdsFromFile(carfilename);
+				 strtid= initializeIdsFromFileMax(carfilename);//max id
 				 Car.setStartingId(strtid); //static method sari oop yaad aagai
 
-				 strtid=initializeIdsFromFile(renterfilename);
+				 strtid=initializeIdsFromFileMax(renterfilename);
 				 Renter.setStartingId(strtid);
 			//	 initializeIdsFromFile(tranfilename);
 			 }
@@ -65,7 +69,13 @@ public class Main {
 		 else if(storage==2)
 		 {
 			 mySqlstorage= new JBDCDemo();
+			 int [] a=getMinMaxRenterId();
+			 Renter.setStartingId(a[0]);
+			 int[] b=getMinMaxCarId();
+			 Car.setStartingId(a[0]);
 			 addFromSQLToCRMS(rent_transactions);
+			 Renter.setStartingId(a[1]+1);
+			 Car.setStartingId(a[1]+1);
 		 }
 		 
 		 //MAIN MENUUU
@@ -104,17 +114,17 @@ public class Main {
 				 int choice_1=-1;
 				 //validate input 
 				 do {
-			            System.out.println("Enter your choice (1-3):");
+			            System.out.println("Enter your choice (1-4):");
 			            while (!sc.hasNextInt()) {  // Check if input is an integer
 			                System.out.println("Invalid input. Please enter a number between 1 and 3.");
 			                sc.next();  // Discard invalid input
 			            }
 			            choice_1 = sc.nextInt();
 
-			            if (choice_1 < 1 || choice_1 > 3) {
+			            if (choice_1 < 1 || choice_1 > 4) {
 			                System.out.println("Invalid choice. Please select a valid option (1-3).");
 			            }
-			        } while (choice_1 < 1 || choice_1 > 3);  // Repeat until a valid choice is entered
+			        } while (choice_1 < 1 || choice_1 > 4);  // Repeat until a valid choice is entered
 
 				 //done validation 
 				 Car car_type= null;
@@ -242,23 +252,17 @@ public class Main {
 				 }	
 				 else if(choice_1==4)
 				 {
-					 System.out.println("Enter the id of the car you want to update");
-					 int id= sc.nextInt();
 					 for (Car car : car_management.getCars())
 					 {
-					     if (car.getID() == id)
-					     {
-					         car_type = car;
-					         break;
-					     }
+						 if(car_type!=null)
+						 {
+							 if(storage==1)
+								 handleCarFile(car_type,carfilename,myStorage,2);
+							 else if(storage==2)
+								 handleCarMySQL(car_type,mySqlstorage,2);
+						 }
 					 }
-					 if(car_type!=null)
-					 {
-						 if(storage==1)
-							 handleCarFile(car_type,carfilename,myStorage,2);
-						 else if(storage==2)
-							 handleCarMySQL(car_type,mySqlstorage,2);
-					 }
+					 
 				 }
 			 }
 			 
@@ -381,9 +385,12 @@ public class Main {
 				 {
 					 System.out.println("Enter the id of the car you want to remove");
 					 int id= sc.nextInt();
-					 renter_management.removeRenter(id);
+					 
 
-					 for (Renter rent : renter_management.getRenters())
+				///	 System.out.println("Renters in management: " + rent_transactions.getRenter_management().getRenters().size());
+					// System.out.println("Renters in management: " + rent_transactions.getRenter_management().getRenters().get(1));
+
+					 for (Renter rent : rent_transactions.getRenter_management().getRenters())
 					 {
 					     if (rent.getRentID() == id)
 					     {
@@ -393,9 +400,10 @@ public class Main {
 					 }
 					 if(renter_type!=null)
 					 {
+						 renter_management.removeRenter(id);
 						 if(storage==1)
 						 	handleRenterFile(renter_type,renterfilename,myStorage,4);
-					 	else if(storage==2)
+					 	 else if(storage==2)
 					 		handleRenterMySQL(renter_type,mySqlstorage,4);
 					 }
 				 } 
@@ -450,10 +458,10 @@ public class Main {
 				 if(choice_3==1)
 				 {
 					 rent_transactions.rentCar();
-					 if(storage==1)
-						 handleTransactionFile(rent_transactions,tranfilename,myStorage,1);
-					 else if(storage==2)
-						 handleTransactionMySQL(rent_transactions,mySqlstorage,1);
+//					 if(storage==1)
+//						 handleTransactionFile(rent_transactions,tranfilename,myStorage,1);
+//					 else if(storage==2)
+//						 handleTransactionMySQL(rent_transactions,mySqlstorage,1);
 					 
 				 }
 				 else if(choice_3==2)
@@ -461,26 +469,26 @@ public class Main {
 					 System.out.println("\nDisplaying information from CRMS\n");
 					 rent_transactions.displayRentalDetails();
 					 System.out.println("\nDisplaying information from storage method\n");
-					 if(storage==1)
-						 handleTransactionFile(rent_transactions,tranfilename,myStorage,2);
-					 else if(storage==2)
-						 handleTransactionMySQL(rent_transactions,mySqlstorage,2);
+//					 if(storage==1)
+//						 handleTransactionFile(rent_transactions,tranfilename,myStorage,2);
+//					 else if(storage==2)
+//						 handleTransactionMySQL(rent_transactions,mySqlstorage,2);
 				 }
 				 else if (choice_3==3)
 				 {
 					 rent_transactions.rentCalculation();
-					 if(storage==1) //adds in file the damage cost + total rental cost 
-						 handleTransactionFile(rent_transactions,tranfilename,myStorage,4);
-					 else if(storage==2)
-						 handleTransactionMySQL(rent_transactions,mySqlstorage,4);
+//					 if(storage==1) //adds in file the damage cost + total rental cost 
+//						 handleTransactionFile(rent_transactions,tranfilename,myStorage,4);
+//					 else if(storage==2)
+//						 handleTransactionMySQL(rent_transactions,mySqlstorage,4);
 				 }
 				 else if(choice_3==4)
 				 {
 					 rent_transactions.costWithInsurance();
-					 if(storage==1)
-						 handleTransactionFile(rent_transactions,tranfilename,myStorage,3);
-					 else if(storage==2)
-						 handleTransactionMySQL(rent_transactions,mySqlstorage,3);
+//					 if(storage==1)
+//						 handleTransactionFile(rent_transactions,tranfilename,myStorage,3);
+//					 else if(storage==2)
+//						 handleTransactionMySQL(rent_transactions,mySqlstorage,3);
 				 }
 				 else if(choice_3==5)
 				 {
@@ -489,10 +497,10 @@ public class Main {
 					 System.out.println("Enter the id of the car you want to return");
 					 int car_id= sc.nextInt();
 					 rent_transactions.returnCar(renter_id, car_id);
-					 if(storage==1)
-						 handleTransactionFile(rent_transactions,tranfilename,myStorage,5);
-					 else if(storage==2)
-						 handleTransactionMySQL(rent_transactions,mySqlstorage,5);
+//					 if(storage==1)
+//						 handleTransactionFile(rent_transactions,tranfilename,myStorage,5);
+//					 else if(storage==2)
+//						 handleTransactionMySQL(rent_transactions,mySqlstorage,5);
 				 }
 			 }
 			 else if(choice==4)
@@ -529,7 +537,7 @@ public class Main {
 			else if(option ==3)
 			{
 				try {
-					 storage.displayRenters(filename); // This may throw IOException
+					 storage.displayRenters(filename); 
 				 } 
 				 catch (IOException e) {
 				        System.out.println("An error occurred while displaying the renter data: " + e.getMessage());
@@ -538,7 +546,7 @@ public class Main {
 			else if(option==4)
 			{
 				try {
-				    storage.removeRenter(rent.getRentID(), filename); // Remove the car from the file
+				    storage.removeRenter(rent.getRentID(), filename);
 				} 
 				catch (IOException e) {
 				    System.out.println("Error occurred while removing the renter: " + e.getMessage());
@@ -563,6 +571,13 @@ public class Main {
 			else if(option==2)
 			{
 				//updates method
+
+				 try {
+				        storage.updateCar(car, filename); 
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				 }
 				
 			}
 			else if(option==3)
@@ -688,6 +703,14 @@ public class Main {
 	                String address = renterData[3];
 	                String phone = renterData[4];
 	                String type = renterData[5];
+	                String brand="";
+	                int carid=-1;
+	                		
+	                if(renterData.length>=7)
+	                {
+	                	brand= renterData[6];
+	                	carid=Integer.parseInt(renterData[7]);
+	                }
 	                Renter renter=null;
 	                if(type != null && type.equals("Regular Renter"))
 	                	renter= new RegularRenter( name, email, address, phone); 
@@ -696,7 +719,25 @@ public class Main {
 	                else if(type != null && type.equals("Corporate Renter"))
 	                	renter= new CorporateRenter(name, email, address, phone);
 	                if(renter!=null)
+	                {
 	                	crms.getRenter_management().addRenters(renter); 
+	                	Car rentedCar = null;
+	                    for (Car car : crms.getCar_management().getCars()) 
+	                    {
+	                        if (car.getID() == carid && car.getBrand().equals(brand)) 
+	                        {
+	                            rentedCar = car;
+	                            break;
+	                        }
+	                    }
+
+	                    if (rentedCar != null) 
+	                    {
+	                        List<Car> rentedCars = new ArrayList<>();
+	                        rentedCars.add(rentedCar);
+	                        renter.setRentedCars(rentedCars);  
+	                    }
+	                }
 	            }
 	        }
 	    } 
@@ -704,7 +745,7 @@ public class Main {
 	        System.out.println("Error reading renters file: " + e.getMessage());
 	    }
 	}
-	public static int initializeIdsFromFile(String filename) throws IOException 
+	public static int initializeIdsFromFileMax(String filename) throws IOException 
 	{
         try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
         {
@@ -712,15 +753,40 @@ public class Main {
             int maxId = 0;
             while ((line = reader.readLine()) != null) {
                 String[] Data = line.split(";");
-                if (Data.length > 0)
+                if (Data.length > 0 && !Data[0].isEmpty())
                 {
                     int id = Integer.parseInt(Data[0]);
                     maxId = Math.max(maxId, id); 
                 }
             }
             maxId+=1;
-            return maxId; // Set nextId to maxId + 1
+            return maxId; 
         }
+    }
+	public static int initializeIdsFromFileMin(String filename) throws IOException 
+	{
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
+	    {
+	        String line;
+	        int minId = 10000000; 
+	        boolean foundValidId = false;  
+	        while ((line = reader.readLine()) != null)
+	        {
+	            String[] Data = line.split(";");
+	            if (Data.length > 0 && !Data[0].isEmpty())
+	            {
+	                try {
+	                    int id = Integer.parseInt(Data[0]);
+	                    minId = Math.min(minId, id);
+	                    foundValidId = true; // Valid ID found
+	                }
+	                catch (NumberFormatException e) {
+	                    System.out.println("Invalid ID format in line: " + line); // Log invalid ID
+	                }
+	            }
+	        }
+	        return foundValidId ? minId : 1;
+	    }
     }
 	
 	
@@ -736,13 +802,13 @@ public class Main {
 				s.saveCars(car);
 			}
 			else if(option==2){
-				s.updateCar(car.getID());
+				s.updateCar(car);
 			}
 			else if(option==3){
 				s.displayCars();
 			}
 			else if(option==4){
-				s.removeCar();
+				s.removeCar(car.getID());
 			}
 			else if(option==5){
 				return;
@@ -767,7 +833,7 @@ public class Main {
 			}
 			else if(option==4)
 			{
-				s.removeRenter();
+				s.removeRenter(rent.getRentID());
 			}
 	}
 	public static void handleTransactionMySQL(CRMS tran, JBDCDemo s,int option)
@@ -797,122 +863,184 @@ public class Main {
 			}
 			
 	}
-	public static void addFromSQLToCRMS( CRMS crms) 
+	public static void addFromSQLToCRMS(CRMS crms)
 	{
-        Connection conn = null;
-        Statement stmtcar = null;
-        ResultSet rscar = null;
-        Statement stmtrent = null;
-        Statement stmtrentedCars = null;
-        ResultSet rsrent = null;
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crms_task", "root", "22639646410Aa");
-           
-            stmtcar = conn.createStatement();
-            String sql = "SELECT carid, brand, model, year, status, fee, plate,type FROM car"; 
-            rscar = stmtcar.executeQuery(sql);
-            //CARS
-            while (rscar.next()) 
-            {
-                String brand = rscar.getString("brand");
-                String model = rscar.getString("model");
-                int year = rscar.getInt("year");
-                boolean status = rscar.getBoolean("status");
-                int fee = rscar.getInt("fee");
-                String plate = rscar.getString("plate");
-                String type= rscar.getString("type");
-                Car car=null;
-                if(type != null && type.equals("Compact Car"))
-                {
-                	car = new CompactCar(brand, model,year, plate,status,fee);
-                }	
-                else if(type != null && type.equals("SUV"))
-                {
-                	car = new SUV(brand, model, year, plate,status,fee);
-                }
-                else if(type != null && type.equals("Luxury Car"))
-                {
-                	car = new LuxuryCar(brand, model, year, plate, status,fee ); 
-                }
-                if(car!=null)
-                	crms.getCar_management().addCars(car);; 
-            }
-         
-        //RENTER
-            stmtrent = conn.createStatement();
-            sql = "SELECT renterid, name, email, address,phone_no,type FROM renter"; 
-            rsrent = stmtrent.executeQuery(sql);
-            //Renters
-            while (rsrent.next()) 
-            {
-            	int renterid = rsrent.getInt("renterid");
-                String name = rsrent.getString("name");
-                String email = rsrent.getString("email");
-                String address= rsrent.getString("address");
-                String phone_no = rsrent.getString("phone_no");
-                String type= rsrent.getString("type");
-                Renter rent=null;
-                if(type != null && type.equals("Regular Renter"))
-                {
-                	rent = new RegularRenter(name,email,address,phone_no);
-                }	
-                else if(type != null && type.equals("Frequent Renter"))
-                {
-                	rent = new FrequentRenter(name,email,address,phone_no);
-                }
-                else if(type != null && type.equals("Corporate Renter"))
-                {
-                	rent = new CorporateRenter(name,email,address,phone_no ); 
-                }
-                if(rent!=null)
-                {
-                crms.getRenter_management().addRenters(rent);; 
-                
-                stmtrentedCars = conn.createStatement();
-                String carsRentedSQL = "SELECT carid, brand FROM cars_rented WHERE renterid = " + renterid;
-                ResultSet rsCars = stmtrentedCars.executeQuery(carsRentedSQL);
-                List<Car> rentedCars= new ArrayList<>();
-                while (rsCars.next()) 
-                {
-                    int carid = rsCars.getInt("carid");
-                    String brand = rsCars.getString("brand");
-                    Car rentedCar=null;
-                    for(Car car: crms.getCar_management().getCars())
-                    {
-                    	if(car.getID()==carid)
-                    	{
-                    		rentedCar=car;
-                    		break;
-                    	}
-                    }
-                    rentedCars.add(rentedCar);
-                }
-                rent.setRentedCars(rentedCars);
-                rsCars.close();
-                }
-            }           
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally 
-        {
-            try {
-                if (rscar != null) rscar.close();
-                if (stmtcar != null) stmtcar.close();
-                if (rsrent != null) rsrent.close();
-                if (stmtrentedCars != null) stmtrentedCars.close();
-                if (stmtrent != null) stmtrent.close();
-                if (conn != null) conn.close();
-            }
-            catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
+	    Connection conn = null;
+	    Statement stmtcar = null;
+	    ResultSet rscar = null;
+	    Statement stmtrent = null;
+	    ResultSet rsrent = null;
 	
-	//CRUD 
+	    try {
+	        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crms_task", "root", "22639646410Aa");
+	
+	        // CARS
+	        stmtcar = conn.createStatement();
+	        String sqlCar = "SELECT carid, brand, model, year, status, fee, plate, type FROM car";
+	        rscar = stmtcar.executeQuery(sqlCar);
+	
+	        while (rscar.next()) {
+	            String brand = rscar.getString("brand");
+	            String model = rscar.getString("model");
+	            int year = rscar.getInt("year");
+	            boolean status = rscar.getBoolean("status");
+	            int fee = rscar.getInt("fee");
+	            String plate = rscar.getString("plate");
+	            String type = rscar.getString("type");
+	
+	            Car car = null;
+	            if ("Compact Car".equals(type)) {
+	                car = new CompactCar(brand, model, year, plate, status, fee);
+	            } else if ("SUV Car".equals(type)) {
+	                car = new SUV(brand, model, year, plate, status, fee);
+	            } else if ("Luxury Car".equals(type)) {
+	                car = new LuxuryCar(brand, model, year, plate, status, fee);
+	            }
+	
+	            if (car != null) {
+	                crms.getCar_management().addCars(car);
+	            }
+	        }
+	
+	        // RENTERS
+	        stmtrent = conn.createStatement();
+	        String sqlRenter = "SELECT renterid, name, email, address, phone_no, type FROM renter";
+	        rsrent = stmtrent.executeQuery(sqlRenter);
+	
+	        while (rsrent.next()) {
+	            int renterid = rsrent.getInt("renterid");
+	            String name = rsrent.getString("name");
+	            String email = rsrent.getString("email");
+	            String address = rsrent.getString("address");
+	            String phone_no = rsrent.getString("phone_no");
+	            String type = rsrent.getString("type");
+	           // Double total_rent_fee= rsrent.getDouble("total_rent_fee"); 
+	
+	            Renter rent = null;
+	            if ("Regular Renter".equals(type)) {
+	                rent = new RegularRenter(name, email, address, phone_no);
+	            } else if ("Frequent Renter".equals(type)) {
+	                rent = new FrequentRenter(name, email, address, phone_no);
+	            } else if ("Corporate Renter".equals(type)) {
+	                rent = new CorporateRenter(name, email, address, phone_no);
+	            }
+	
+	            if (rent != null)
+	            {
+	            	
 
+	
+	                // CARS RENTED BY THIS RENTER
+	                String carsRentedSQL = "SELECT carid FROM cars_rented WHERE renterid = " + renterid;
+	                try (Statement stmtrentedCars = conn.createStatement();
+	                     ResultSet rsCars = stmtrentedCars.executeQuery(carsRentedSQL))
+	                {
+	
+	                    List<Car> rentedCars = new ArrayList<>();
+	                    while (rsCars.next())
+	                    {
+	                        int carid = rsCars.getInt("carid");
+	                        Car rentedCar = null;
+	                        for (Car car : crms.getCar_management().getCars()) {
+	                            if (car.getID() == carid) {
+	                                rentedCar = car;
+	                                break;
+	                            }
+	                        }
+	
+	                        if (rentedCar != null) {
+	                            rentedCars.add(rentedCar);
+	                        }
+	                    }
+	
+	                    rent.setRentedCars(rentedCars);
+	                }
+	                crms.getRenter_management().addRenters(rent);
+	            	System.out.println("Renters in management: " + crms.getRenter_management().getRenters().size());
+	            }
+	        }
+	
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rscar != null) rscar.close();
+	            if (stmtcar != null) stmtcar.close();
+	            if (rsrent != null) rsrent.close();
+	            if (stmtrent != null) stmtrent.close();
+	            if (conn != null) conn.close();
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	}
+	public static int[] getMinMaxRenterId() {
+	    Connection conn = null;
+	    Statement stmt = null;
+	    ResultSet rs = null;
+	    int[] minMaxRenterId = new int[2]; // Index 0: min, Index 1: max
+
+	    try {
+	        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crms_task", "root", "22639646410Aa");
+	        stmt = conn.createStatement();
+
+	        String sql = "SELECT MIN(renterid) AS min_renterid, MAX(renterid) AS max_renterid FROM renter";
+	        rs = stmt.executeQuery(sql);
+
+	        if (rs.next()) {
+	            minMaxRenterId[0] = rs.getInt("min_renterid");  // Minimum renterid
+	            minMaxRenterId[1] = rs.getInt("max_renterid");  // Maximum renterid
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conn != null) conn.close();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+
+	    return minMaxRenterId;  // Return array containing min and max renterid
+	}
+	public static int[] getMinMaxCarId() {
+	    Connection conn = null;
+	    Statement stmt = null;
+	    ResultSet rs = null;
+	    int[] minMaxCarId = new int[2]; // Index 0: min, Index 1: max
+
+	    try {
+	        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crms_task", "root", "22639646410Aa");
+	        stmt = conn.createStatement();
+
+	        String sql = "SELECT MIN(carid) AS min_carid, MAX(carid) AS max_carid FROM car";
+	        rs = stmt.executeQuery(sql);
+
+	        if (rs.next()) {
+	        	minMaxCarId[0] = rs.getInt("min_carid");  // Minimum renterid
+	        	minMaxCarId[1] = rs.getInt("max_carid");  // Maximum renterid
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conn != null) conn.close();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+
+	    return minMaxCarId;  // Return array containing min and max renterid
+	}
+
+		
+		//CRUD 
+	
 }
 

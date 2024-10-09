@@ -1,2 +1,1 @@
-2;sfad;sfda;34;2;fdag;false;Compact Car
-3;sdaf;sadf;23;34;sdaf;false;Compact Car
+1;toyota;corolla;2020;54;abs0123;false;Compact Car
