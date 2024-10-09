@@ -1,7 +1,7 @@
 import java.util.*;
 
 abstract class Car {
-	private static int id;
+	private static int id=1;
 	private final int carID;
 	private String Brand;
 	private String model;
@@ -10,6 +10,12 @@ abstract class Car {
 	private int rental_fee;
 	private String plate_no;
 	
+	
+	public static void setStartingId(int startingId) 
+	{
+        if (startingId > id)
+            id = startingId;  
+    }
 	
 	public Car( String b, String m, int y, boolean status, int fee, String plate)
 	{
@@ -123,7 +129,7 @@ class CompactCar extends Car
         System.out.println("Car Type: Compact Car");
         System.out.println("Features: Basic features, suitable for short-distance travel.");
         super.displayDetails();
-        System.out.println("---------------------------");
+        System.out.println("\n");
 	}
 
 	//implement logic
@@ -176,7 +182,7 @@ class SUV extends Car{
 		 System.out.println("Car Type: SUV Car");
 		 System.out.println("Features: Spacious, suitable for family trips.");
 		 super.displayDetails();
-		 System.out.println("---------------------------");
+		 System.out.println("\n");
 		
 	}
 	
@@ -226,7 +232,7 @@ class LuxuryCar extends Car{
 		 System.out.println("Car Type: Luxury Car");
 		 System.out.println("Features: High-end, suitable for special occasions.");
 		 super.displayDetails();
-		 System.out.println("---------------------------");
+		 System.out.println("\n");
 		
 		
 	}

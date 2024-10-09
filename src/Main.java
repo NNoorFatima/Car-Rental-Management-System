@@ -1,5 +1,11 @@
 import java.io.IOException;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import java.util.*;
 public class Main {
@@ -38,17 +44,31 @@ public class Main {
 	            }
 	        }while (storage < 1 || storage > 3); // Loop until valid input
 		 //storage choice
+		 int strtid;
 		 if(storage==1)
 		 {
 			 myStorage=new FileManager();
+			 try {
+				 loadDataIntoCRMS(rent_transactions,carfilename,renterfilename,tranfilename);
+				 strtid= initializeIdsFromFile(carfilename);
+				 Car.setStartingId(strtid); //static method sari oop yaad aagai
+
+				 strtid=initializeIdsFromFile(renterfilename);
+				 Renter.setStartingId(strtid);
+			//	 initializeIdsFromFile(tranfilename);
+			 }
+			 catch (IOException  e){	
+				System.out.println("Error"); 
+			 }
+			 
 		 }
 		 else if(storage==2)
 		 {
 			 mySqlstorage= new JBDCDemo();
+			 addFromSQLToCRMS(rent_transactions);
 		 }
 		 
 		 //MAIN MENUUU
-	     
 		 while(true)
 		 {
 			 
@@ -98,6 +118,7 @@ public class Main {
 
 				 //done validation 
 				 Car car_type= null;
+				 
 				 if(choice_1==1)
 				 {
 					 
@@ -185,34 +206,59 @@ public class Main {
 	 			 }
 				 else if(choice_1==2)
 				 {
-					 System.out.println("\nDisplaying cars from CRMS\n");
-					 car_management.displayCars();
+					 
 					 System.out.println("\nDisplaying cars from storage method\n");
 					 if(storage==1)
 						 handleCarFile(car_type,carfilename,myStorage,3);
 					 else if(storage==2)
 						 handleCarMySQL(car_type,mySqlstorage,3);
+					 System.out.println("------------------------------------");
+					 System.out.println("\nDisplaying cars from CRMS\n");
+					 car_management.displayCars();
 				 }
 				 else if(choice_1==3)
 				 {
 					 System.out.println("Enter the id of the car you want to remove");
 					 int id= sc.nextInt();
-					 car_management.removeCar(id);
-					 car_type= car_management.getCars().get(id);
-					 if(storage==1)
-						 handleCarFile(car_type,carfilename,myStorage,4);
-					 else if(storage==2)
-						 handleCarMySQL(car_type,mySqlstorage,4);
+					 for (Car car : car_management.getCars())
+					 {
+					     if (car.getID() == id)
+					     {
+					         car_type = car;
+					         break;
+					     }
+					 }
+
+					 if(car_type != null)
+					 {
+						 car_management.removeCar(id);
+						 if(storage==1)
+							 handleCarFile(car_type,carfilename,myStorage,4);
+					 	 else if(storage==2)
+					 		 handleCarMySQL(car_type,mySqlstorage,4);
+					 }
+					 else 
+						 System.out.println("Car with id "+ id+ "doesn't exist");
 				 }	
 				 else if(choice_1==4)
 				 {
-					 System.out.println("Enter the id of the car you want to remove");
+					 System.out.println("Enter the id of the car you want to update");
 					 int id= sc.nextInt();
-					 car_type= car_management.getCars().get(id);
-					 if(storage==1)
-						 handleCarFile(car_type,carfilename,myStorage,2);
-					 else if(storage==2)
-						 handleCarMySQL(car_type,mySqlstorage,2);
+					 for (Car car : car_management.getCars())
+					 {
+					     if (car.getID() == id)
+					     {
+					         car_type = car;
+					         break;
+					     }
+					 }
+					 if(car_type!=null)
+					 {
+						 if(storage==1)
+							 handleCarFile(car_type,carfilename,myStorage,2);
+						 else if(storage==2)
+							 handleCarMySQL(car_type,mySqlstorage,2);
+					 }
 				 }
 			 }
 			 
@@ -321,35 +367,59 @@ public class Main {
 				 }
 				 else if(choice_2==2)
 				 {
-					 System.out.println("Displaying cars from CRMS\n");
-					 renter_management.displayRenter();
+					 
 					 System.out.println("\nDisplaying cars from storage method\n");
 					 if(storage==1)
 						 handleRenterFile(renter_type,renterfilename,myStorage,3);
 					 else if(storage==2)
 						 handleRenterMySQL(renter_type,mySqlstorage,3);
+					 System.out.println("------------------------------------");
+					 System.out.println("Displaying cars from CRMS\n");
+					 renter_management.displayRenter();
 				 }
 				 else if(choice_2==3)
 				 {
 					 System.out.println("Enter the id of the car you want to remove");
 					 int id= sc.nextInt();
 					 renter_management.removeRenter(id);
-					 renter_type=renter_management.getRenters().get(id);
-					 if(storage==1)
-						 handleRenterFile(renter_type,renterfilename,myStorage,4);
-					 else if(storage==2)
-						 handleRenterMySQL(renter_type,mySqlstorage,4);
+
+					 for (Renter rent : renter_management.getRenters())
+					 {
+					     if (rent.getRentID() == id)
+					     {
+					         renter_type = rent;
+					         break;
+					     }
+					 }
+					 if(renter_type!=null)
+					 {
+						 if(storage==1)
+						 	handleRenterFile(renter_type,renterfilename,myStorage,4);
+					 	else if(storage==2)
+					 		handleRenterMySQL(renter_type,mySqlstorage,4);
+					 }
 				 } 
 				 else if(choice_2==4)
 				 {
-					 System.out.println("Enter the id of the car you want to update");
+					 System.out.println("Enter the id of the renter you want to update");
 					 int id= sc.nextInt(); 
-					 renter_type=renter_management.getRenters().get(id);
+					 for (Renter rent : renter_management.getRenters())
+					 {
+					     if (rent.getRentID() == id)
+					     {
+					         renter_type = rent;
+					         break;
+					     }
+					 }
+					 if(renter_type!=null)
+					 {
 					 if(storage==1)
 						 handleRenterFile(renter_type,renterfilename,myStorage,2);
 					 else if(storage==2)
 						 handleRenterMySQL(renter_type,mySqlstorage,2);
-				 }
+					 }
+				 
+				}
 			 }
 //========================================================================
 
@@ -382,6 +452,8 @@ public class Main {
 					 rent_transactions.rentCar();
 					 if(storage==1)
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,1);
+					 else if(storage==2)
+						 handleTransactionMySQL(rent_transactions,mySqlstorage,1);
 					 
 				 }
 				 else if(choice_3==2)
@@ -391,18 +463,24 @@ public class Main {
 					 System.out.println("\nDisplaying information from storage method\n");
 					 if(storage==1)
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,2);
+					 else if(storage==2)
+						 handleTransactionMySQL(rent_transactions,mySqlstorage,2);
 				 }
 				 else if (choice_3==3)
 				 {
 					 rent_transactions.rentCalculation();
 					 if(storage==1) //adds in file the damage cost + total rental cost 
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,4);
+					 else if(storage==2)
+						 handleTransactionMySQL(rent_transactions,mySqlstorage,4);
 				 }
 				 else if(choice_3==4)
 				 {
 					 rent_transactions.costWithInsurance();
 					 if(storage==1)
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,3);
+					 else if(storage==2)
+						 handleTransactionMySQL(rent_transactions,mySqlstorage,3);
 				 }
 				 else if(choice_3==5)
 				 {
@@ -413,7 +491,8 @@ public class Main {
 					 rent_transactions.returnCar(renter_id, car_id);
 					 if(storage==1)
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,5);
-					 
+					 else if(storage==2)
+						 handleTransactionMySQL(rent_transactions,mySqlstorage,5);
 				 }
 			 }
 			 else if(choice==4)
@@ -483,88 +562,7 @@ public class Main {
 			}
 			else if(option==2)
 			{
-				Car car_type= null;
-				//update car with car id passed in parameter
-				System.out.println("Enter the new car details");
-				System.out.println("Enter if its\n a.CompactCar\n b.SUV\n c.Luxury Car ");
-				 char ch=' ';
-				 //validation 
-			        do {
-			            System.out.println("Enter your choice (a, b, or c):");
-			            String input = sc.next();  // Get the user's input as a String
-	
-			            if (input.length() == 1) {  // Ensure input is a single character
-			                ch = input.charAt(0);  // Get the first character
-			                ch = Character.toLowerCase(ch);  // Convert to lowercase to handle both cases
-			            } else {
-			                ch = 'x';  // Invalid input flag
-			            }
-			            if (ch != 'a' && ch != 'b' && ch != 'c') {
-			                System.out.println("Invalid choice. Please enter 'a' for Compact Car, 'b' for SUV, or 'c' for Luxury Car.");
-			            }
-			        } while (ch != 'a' && ch != 'b' && ch != 'c'); 
-				 if(ch=='a')
-				 {
-					 sc.nextLine();
-					 System.out.println("Enter brand");
-					 String brand = sc.nextLine();
-					 System.out.println("Enter model");
-					 String model = sc.nextLine();
-					 System.out.println("Enter year");
-					 int year = sc.nextInt();
-					 sc.nextLine(); // Consume the newline character
-					 System.out.println("Enter rental fee");
-					 int fee = sc.nextInt();
-					 sc.nextLine(); // Consume the newline character
-					 System.out.println("Enter plate number");
-					 String plate_no = sc.nextLine();
-					 car_type = new CompactCar(brand, model, year, plate_no, false, fee);
-					 
-				 }
-				 else if(ch=='b')
-				 {
-					 sc.nextLine();
-					 System.out.println("Enter brand");
-					 String brand = sc.nextLine();
-					 System.out.println("Enter model");
-					 String model = sc.nextLine();
-					 System.out.println("Enter year");
-					 int year= sc.nextInt();
-					 sc.nextLine(); 
-					 System.out.println("Enter rental fee");
-					 int fee= sc.nextInt();
-					 sc.nextLine(); 
-					 System.out.println("Enter plate number");
-					 String plate_no = sc.nextLine();
-					 car_type=new SUV(brand,model,year,plate_no,false,fee);
-					
-				 }
-				 else if(ch=='c') 
-				 {
-					 sc.nextLine();
-					 System.out.println("Enter brand");
-					 String brand = sc.nextLine();
-					 System.out.println("Enter model");
-					 String model = sc.nextLine();
-					 System.out.println("Enter year");
-					 int year= sc.nextInt();
-					 sc.nextLine(); 
-					 System.out.println("Enter rental fee");
-					 int fee= sc.nextInt();
-					 sc.nextLine(); 
-					 System.out.println("Enter plate number");
-					 String plate_no = sc.nextLine();
-					 car_type=new LuxuryCar(brand,model,year,plate_no,false,fee);
-				 }
-	
-				int id= car.getID();
-				try {
-				    storage.updateCar(id, car_type, filename);
-				} 
-				catch (IOException e) {
-				    System.out.println("Error updating the car: " + e.getMessage());
-				    e.printStackTrace();
-				}
+				//updates method
 				
 			}
 			else if(option==3)
@@ -641,6 +639,89 @@ public class Main {
 		
 	}
 
+	public static void loadDataIntoCRMS(CRMS crms, String carFilename, String renterFilename, String transactionFilename) throws IOException {
+	    // CARS
+	    try (BufferedReader carReader = new BufferedReader(new FileReader(carFilename)))
+	    {
+	        String line;
+	        while ((line = carReader.readLine()) != null)
+	        {
+	            String[] carData = line.split(";");
+	            if (carData.length >= 8)
+	            {
+	                int id = Integer.parseInt(carData[0]);
+	                String brand = carData[1];
+	                String model = carData[2];
+	                int year = Integer.parseInt(carData[3]);
+	                int fee = Integer.parseInt(carData[4]);
+	                String plate = carData[5];
+	                boolean status = Boolean.parseBoolean(carData[6]);
+	                String type= carData[7];
+	                Car car=null;
+	                if(type != null && type.equals("Compact Car"))
+	                	car = new CompactCar(brand, model, year, plate, status,fee ); 
+	                else if(type != null && type.equals("SUV"))
+	                	car = new SUV(brand, model, year, plate, status,fee ); 
+	                else if(type != null && type.equals("Luxury Car"))
+	                	car = new LuxuryCar(brand, model, year, plate, status,fee ); 
+	                crms.getCar_management().addCars(car);; 
+	            }
+	        }
+	    } 
+	    catch (IOException e) {
+	        System.out.println("Error reading cars file: " + e.getMessage());
+	    }
+
+	    // RENTERS
+	    try (BufferedReader renterReader = new BufferedReader(new FileReader(renterFilename))) 
+	    {
+	        String line;
+	        while ((line = renterReader.readLine()) != null) 
+	        {
+	            String[] renterData = line.split(";");
+	            if (renterData.length >= 6)
+	            {
+	                int rentId = Integer.parseInt(renterData[0]);
+	                String name = renterData[1];
+	                String email = renterData[2];
+	                String address = renterData[3];
+	                String phone = renterData[4];
+	                String type = renterData[5];
+	                Renter renter=null;
+	                if(type != null && type.equals("Regular Renter"))
+	                	renter= new RegularRenter( name, email, address, phone); 
+	                else if(type != null && type.equals("Frequent Renter"))
+	                	renter= new FrequentRenter( name, email, address, phone);
+	                else if(type != null && type.equals("Corporate Renter"))
+	                	renter= new CorporateRenter(name, email, address, phone);
+	                crms.getRenter_management().addRenters(renter); 
+	            }
+	        }
+	    } 
+	    catch (IOException e) {
+	        System.out.println("Error reading renters file: " + e.getMessage());
+	    }
+	}
+	public static int initializeIdsFromFile(String filename) throws IOException 
+	{
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
+        {
+            String line;
+            int maxId = 0;
+            while ((line = reader.readLine()) != null) {
+                String[] Data = line.split(";");
+                if (Data.length > 0)
+                {
+                    int id = Integer.parseInt(Data[0]);
+                    maxId = Math.max(maxId, id); 
+                }
+            }
+            maxId+=1;
+            return maxId; // Set nextId to maxId + 1
+        }
+    }
+	
+	
 	
 	
 	//CRUD SQL
@@ -686,12 +767,145 @@ public class Main {
 			{
 				s.removeRenter();
 			}
+	}
+	public static void handleTransactionMySQL(CRMS tran, JBDCDemo s,int option)
+	{
+		if(tran==null && option ==1)
+			return;
+		
+		Scanner sc= new Scanner(System.in);
+			if(option==1){
+				
+				s.saveTransactions(tran);
+			}
+			else if(option==2){
+				s.displayTransactions();
+			}
+			else if(option==3)
+			{
+				
+			}
+			else if(option==4)
+			{
+				
+			}
 			else if(option==5)
 			{
-				return;
+			
 			}
+			
 	}
+	public static void addFromSQLToCRMS( CRMS crms) 
+	{
+        Connection conn = null;
+        Statement stmtcar = null;
+        ResultSet rscar = null;
+        Statement stmtrent = null;
+        Statement stmtrentedCars = null;
+        ResultSet rsrent = null;
 
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crms_task", "root", "22639646410Aa");
+           
+            stmtcar = conn.createStatement();
+            String sql = "SELECT carid, brand, model, year, status, fee, plate,type FROM car"; 
+            rscar = stmtcar.executeQuery(sql);
+            //CARS
+            while (rscar.next()) 
+            {
+                String brand = rscar.getString("brand");
+                String model = rscar.getString("model");
+                int year = rscar.getInt("year");
+                boolean status = rscar.getBoolean("status");
+                int fee = rscar.getInt("fee");
+                String plate = rscar.getString("plate");
+                String type= rscar.getString("type");
+                Car car=null;
+                if(type != null && type.equals("Compact Car"))
+                {
+                	car = new CompactCar(brand, model,year, plate,status,fee);
+                }	
+                else if(type != null && type.equals("SUV"))
+                {
+                	car = new SUV(brand, model, year, plate,status,fee);
+                }
+                else if(type != null && type.equals("Luxury Car"))
+                {
+                	car = new LuxuryCar(brand, model, year, plate, status,fee ); 
+                }
+                crms.getCar_management().addCars(car);; 
+            }
+         
+        //RENTER
+            stmtrent = conn.createStatement();
+            sql = "SELECT renterid, name, email, address,phone_no,type FROM renter"; 
+            rsrent = stmtrent.executeQuery(sql);
+            //Renters
+            while (rsrent.next()) 
+            {
+            	int renterid = rsrent.getInt("renterid");
+                String name = rsrent.getString("name");
+                String email = rsrent.getString("email");
+                String address= rsrent.getString("address");
+                String phone_no = rsrent.getString("phone_no");
+                String type= rsrent.getString("type");
+                Renter rent=null;
+                if(type != null && type.equals("Regular Renter"))
+                {
+                	rent = new RegularRenter(name,email,address,phone_no);
+                }	
+                else if(type != null && type.equals("Frequent Renter"))
+                {
+                	rent = new FrequentRenter(name,email,address,phone_no);
+                }
+                else if(type != null && type.equals("Corporate Renter"))
+                {
+                	rent = new CorporateRenter(name,email,address,phone_no ); 
+                }
+                crms.getRenter_management().addRenters(rent);; 
+                
+                stmtrentedCars = conn.createStatement();
+                String carsRentedSQL = "SELECT carid, brand FROM cars_rented WHERE renterid = " + renterid;
+                ResultSet rsCars = stmtrentedCars.executeQuery(carsRentedSQL);
+                List<Car> rentedCars= new ArrayList<>();
+                while (rsCars.next()) 
+                {
+                    int carid = rsCars.getInt("carid");
+                    String brand = rsCars.getString("brand");
+                    Car rentedCar=null;
+                    for(Car car: crms.getCar_management().getCars())
+                    {
+                    	if(car.getID()==carid)
+                    	{
+                    		rentedCar=car;
+                    		break;
+                    	}
+                    }
+                    rentedCars.add(rentedCar);
+                }
+                rent.setRentedCars(rentedCars);
+                rsCars.close();
+            }           
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally 
+        {
+            try {
+                if (rscar != null) rscar.close();
+                if (stmtcar != null) stmtcar.close();
+                if (rsrent != null) rsrent.close();
+                if (stmtrentedCars != null) stmtrentedCars.close();
+                if (stmtrent != null) stmtrent.close();
+                if (conn != null) conn.close();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+	
 	//CRUD 
 
 }

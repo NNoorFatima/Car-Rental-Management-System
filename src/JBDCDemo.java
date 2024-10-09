@@ -42,12 +42,14 @@ public class JBDCDemo {
 	public static void saveCars(Car car)
 	{
 	    int statusValue = car.getStatus()? 1 : 0; // Assuming "Available" means true, otherwise false
-	    String sql = "INSERT INTO car (brand, model, year, fee, status) VALUES ('"
+	    String sql = "INSERT INTO car (brand, model, year, fee, status,type) VALUES ('"
 	                 + car.getBrand() + "', '" 
 	                 + car.getModel() + "', " 
 	                 + car.getYear() + ", " 
 	                 + car.getFee() + ", " 
-	                 + statusValue + ")";
+	                 + statusValue + ",'"
+	    			 + car.displayCarType()+"','"
+	    			 +car.getPlate();
 	    try (Connection conn = DriverManager.getConnection(URL, username, password);
 	         Statement stmt = conn.createStatement()) {
 
@@ -78,15 +80,17 @@ public class JBDCDemo {
 	                int year = rs.getInt("year");
 	                double fee = rs.getDouble("fee");
 	                int status = rs.getInt("status");
-
+	                String type = rs.getString("type");
+	                String plate= rs.getString("plate");	
 	                // Print the data (you can format this as needed)
 	                System.out.println("ID: " + id +
 	                                   ", Brand: " + brand +
 	                                   ", Model: " + model +
 	                                   ", Year: " + year +
 	                                   ", Fee: " + fee +
-	                                   ", Status: " + (status == 1 ? "Available" : "Unavailable"));
-	            }
+	                                   ", Status: " + (status == 1 ? "Available" : "Unavailable")+
+	                					",Type: "+ type+
+	                					",Plate: "+plate);	            }
 
 	        } 
 		 catch (SQLException e) {
@@ -113,7 +117,7 @@ public class JBDCDemo {
 
 	     } 
 		 catch (SQLException e) {
-	            System.out.println("Error occurred while retrieving cars.");
+	            System.out.println("Error in removing car");
 	            e.printStackTrace();
 		 }
 		
@@ -184,9 +188,9 @@ public class JBDCDemo {
 	{
 	    String sql = "INSERT INTO renter (name, email, address, phone_no) VALUES ('"
 	                 + rent.getName() + "', '" 
-	                 + rent.getEmail()+ "', " 
-	                 + rent.getAddress() + ", " 
-	                 + rent.getPh_no()+ ")"; 
+	                 + rent.getEmail()+ "', '" 
+	                 + rent.getAddress() + "', '" 
+	                 + rent.getPh_no()+ "')"; 
 	    try (Connection conn = DriverManager.getConnection(URL, username, password);
 	         Statement stmt = conn.createStatement()) {
 
@@ -199,35 +203,55 @@ public class JBDCDemo {
 	        System.out.println("Error occurred while adding the renter.");
 	        e.printStackTrace();
 	    }
-	}
-	public static void displayRenters()
-	{
-		 String sql = "SELECT *FROM renter";
-		 
-		 try (Connection conn = DriverManager.getConnection(URL, username, password);
-	             Statement stmt = conn.createStatement();
-	             ResultSet rs = stmt.executeQuery(sql)) 
-		 {
-	            while (rs.next()) 
-	            {
-	                int id = rs.getInt("renterid");
-	                String name = rs.getString("name");
-	                String email = rs.getString("email");
-	                String address = rs.getString("address");
-	                String phone_no = rs.getString("phone_no");
-	                // Print the data (you can format this as needed)
-	                System.out.println("ID: " + id +
-	                                   ", Name: " + name +
-	                                   ", Email: " + email +
-	                                   ", Addres: " + address +
-	                                   ", Phone_no: " + phone_no);
-	            }
+	}	
+	public static void displayRenters() {
+	    String sql = "SELECT * FROM renter";
 
-		 } 
-		 catch (SQLException e) {
-	            System.out.println("Error occurred while retrieving Renter.");
-	            e.printStackTrace();
-		 }
+	    try (Connection conn = DriverManager.getConnection(URL, username, password);
+	         Statement renterStmt = conn.createStatement();
+	         ResultSet renterRs = renterStmt.executeQuery(sql)) {
+
+	        while (renterRs.next()) {
+	            int id = renterRs.getInt("renterid");
+	            String name = renterRs.getString("name");
+	            String email = renterRs.getString("email");
+	            String address = renterRs.getString("address");
+	            String phone_no = renterRs.getString("phone_no");
+
+	            // Print the renter data
+	            System.out.println("ID: " + id +
+	                               "\nName: " + name +
+	                               "\nEmail: " + email +
+	                               "\nAddress: " + address +
+	                               "\nPhone_no: " + phone_no);
+
+	            // Check if the renter has any rented cars
+	            String carsSql = "SELECT carid, brand FROM cars_rented WHERE renterid = " + id;
+	            try (Statement carStmt = conn.createStatement();
+	                 ResultSet carRs = carStmt.executeQuery(carsSql)) {
+
+	                if (!carRs.isBeforeFirst()) 
+	                { // If the ResultSet is empty
+	                    System.out.println("No cars rented.");
+	                } 
+	                else 
+	                {
+	                    System.out.println("Cars rented:");
+	                    while (carRs.next()) 
+	                    {
+	                        int carId = carRs.getInt("carid");
+	                        String brand = carRs.getString("brand");
+	                        System.out.println("- Car ID: " + carId + ", Brand: " + brand);
+	                    }
+	                }
+	            }
+	            System.out.println("\n");
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error occurred while retrieving Renters.");
+	        e.printStackTrace();
+	    }
 	}
 	public static void removeRenter()
 	{
@@ -253,85 +277,107 @@ public class JBDCDemo {
 		 }
 		
 	}
-	public static void updateRenter(int id)
-	{
-//		System.out.println("Choose the renter which you want to update\n");
-//		displayCars();
-		Scanner sc= new Scanner(System.in);
-		int choice = sc.nextInt();
-		
-		System.out.println("What do you want to update?");
-		System.out.println("1. Name");
-		System.out.println("2. Email");
-		System.out.println("3. Address");
-		System.out.println("4. Phone_no");
-		int option = sc.nextInt();
-		sc.nextLine();
-		String sql="";
-		if(option==1)
-		{
-			System.out.println("Enter the new name");
-			String a= sc.nextLine();  
-			sql="UPDATE renter SET name = '"+a+"' WHERE renterid ="+choice;
-		}
-		else if(option==2)
-		{
-			System.out.println("Enter the new email ");
-			String a= sc.nextLine();  
-			sql="UPDATE renter SET email = '"+a+"' WHERE renterid ="+choice;
-		}
-		else if(option==3)
-		{
-			System.out.println("Enter the new address ");
-			String a= sc.nextLine();  
-			sql="UPDATE renter SET address = '"+a+"' WHERE renterid ="+choice;
-		}
-		else if(option==4)
-		{
-			System.out.println("Enter the new phone_no");
-			int a= sc.nextInt();  
-			sc.nextLine();
-			sql="UPDATE renter SET phone_no = '"+a+"' WHERE renterid ="+choice;
-		}
-		
-		
-		
-		 try (Connection conn = DriverManager.getConnection(URL, username, password);
-	             Statement stmt = conn.createStatement())
-		 {
-			 int Affected = stmt.executeUpdate(sql);
-			 if(Affected>0)
-				 System.out.println("renter with id " + choice +" has been updated\n");
-			 else
-				 System.out.println("No car renter id "+ choice +" was found\n");
+	public static void updateRenter(Renter rent) {
+	    String checkRenterSQL = "SELECT COUNT(*) FROM renter WHERE renterid = " + rent.getRentID();
 
-	     } 
+	    try (Connection conn = DriverManager.getConnection(URL, username, password);
+	         Statement checkStmt = conn.createStatement();
+	         Statement insertStmt = conn.createStatement()) {
+
+	        // Check if renter exists
+	        ResultSet rs = checkStmt.executeQuery(checkRenterSQL);
+	        if (rs.next() && rs.getInt(1) == 0)
+	        {
+	            System.out.println("Error: Renter with ID " + rent.getRentID() + " does not exist.");
+	            return;
+	        }
+
+	        // Begin transaction
+	        conn.setAutoCommit(false);
+
+	        if (rent.getRentedCars() != null && !rent.getRentedCars().isEmpty()) 
+	        {
+	            for (Car car : rent.getRentedCars())
+	            {
+	                String insertCarSQL = "INSERT INTO cars_rented (renterid, carid, brand) VALUES ("
+	                                      + rent.getRentID() + ", " + car.getID() + ", '" + car.getBrand() + "')";
+	                insertStmt.executeUpdate(insertCarSQL);
+	            }
+	            conn.commit(); // Commit the transaction
+	            System.out.println("Cars rented by the renter added to cars_rented table.");
+	        } else {
+	            System.out.println("Renter has no rented cars.");
+	        }
+
+	    }
+	    catch (SQLException e) {
+	        System.out.println("Error occurred while updating the renter.");
+	        e.printStackTrace();
+	      
+	    }
+	}
+
+	
+	//Transactions
+	public static void saveTransactions(CRMS tran)
+	{
+		rental_transaction a = tran.getTransactions().get(tran.getTransactions().size()-1);
+	    String sql = "INSERT INTO transaction (tranid, carid, renterid, car_type,renter_type) VALUES ("
+	                 +a.getTransId() + ", '" 
+	                 + a.getCarId()+ ", " 
+	                 + a.getRenterId() + ", '" 
+	                 + a.getCar_type()+ "','"
+	                 +a.getRenter_type()+"')"; 
+	    try (Connection conn = DriverManager.getConnection(URL, username, password);
+	         Statement stmt = conn.createStatement()) {
+
+	        int rowsInserted = stmt.executeUpdate(sql);
+	        if (rowsInserted > 0) 
+	            System.out.println("A new transaction was added successfully!");
+	    } catch (SQLException e) {
+	        System.out.println("Error occurred while adding the transaction.");
+	        e.printStackTrace();
+	    }
+	}
+	public static void displayTransactions()
+	{
+		 String sql = "SELECT *FROM transactions";
+		 
+		 try (Connection conn = DriverManager.getConnection(URL, username, password);
+	             Statement stmt = conn.createStatement();
+	             ResultSet rs = stmt.executeQuery(sql)) 
+		 {
+	            while (rs.next()) 
+	            {
+	                int id = rs.getInt("tranid");
+	                int carid = rs.getInt("carid");
+	                int renterid = rs.getInt("renterid");
+	                String car_type = rs.getString("car_type");
+	                String renter_type = rs.getString("renter_type");
+	                Double totalRentalCost = rs.getObject("totalrentalcost", Double.class); // Using getObject to handle nulls
+	                Double damageCost = rs.getObject("damagecost", Double.class);
+	                Boolean isInsured = rs.getObject("isInsured", Boolean.class);
+	                // Print the data (you can format this as needed)
+	                System.out.println("TranID: " + id +
+	                                   "\nCarID: " + carid +
+	                                   "\nRenterID: " + renterid +
+	                                   "\nCar_type: " + car_type +
+	                                   "\nRenter_type: " + renter_type+
+						                "\nTotal Rental Cost: " + (totalRentalCost != null ? totalRentalCost : "N/A") +
+					                    "\nDamage Cost: " + (damageCost != null ? damageCost : "N/A")+
+					                    "\nIs Insured: " + (isInsured != null ? (isInsured ? "Available\n" : "Unavailable\n") : "N/A\n"));;
+	            }
+
+		 } 
 		 catch (SQLException e) {
-	            System.out.println("Error occurred while retrieving renters.");
+	            System.out.println("Error occurred while retrieving Transaction .");
 	            e.printStackTrace();
 		 }
 	}
-	public static void updateRenter(Renter rent)
+	public static void updateTransactionInsurance()
 	{
-		 try (Connection conn = DriverManager.getConnection(URL, username, password);
-		         Statement stmt = conn.createStatement()) 
-		 {
-			if (rent.getRentedCars() != null && !rent.getRentedCars().isEmpty()) 
-			{
-	            for (Car car : rent.getRentedCars()) {
-	                String insertCarRentedSQL = "INSERT INTO cars_rented (renterid, carid,brand) VALUES (" +
-	                                            rent.getRentID() + ", " + car.getID() + ", '"+ car.getBrand()+"')";
-	                stmt.executeUpdate(insertCarRentedSQL);
-	            }
-	            System.out.println("Cars rented by the renter added to cars_rented table.");
-	        } 
-			else 
-	            System.out.println("Renter has no rented cars.");
-		 } 
-		 catch (SQLException e) 
-		 {
-		        System.out.println("Error occurred while updating the renter.");
-		        e.printStackTrace();
-		 }
+		
 	}
 }
+
+

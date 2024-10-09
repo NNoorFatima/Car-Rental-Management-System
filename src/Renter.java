@@ -3,7 +3,7 @@
  
  
 abstract class Renter {
-	private static int id_count=0;
+	private static int id_count=1;
 	private int rentID;
 	private String name;
 	private String email;
@@ -12,6 +12,11 @@ abstract class Renter {
 	private String ph_no;
 	private String address;
 	
+	public static void setStartingId(int startingId) 
+	{
+        if (startingId > id_count)
+        	id_count = startingId;  
+    }
 	//constructor 
 	public Renter(String nm,String em, String ph,String add)
 	{
@@ -92,7 +97,7 @@ abstract class Renter {
         System.out.println("Total Rental Fee: " + total_rent_fee);
         System.out.println("Rented Cars: ");
         for (Car car : rentedCars) {
-            System.out.println(" - " + car.getModel());
+            System.out.println(" - Car ID: " + car.getID()+", Brand: "+car.getBrand());
         }
 	
 }
@@ -118,7 +123,7 @@ class RegularRenter extends Renter
 	{
 		System.out.println("type: Regular Renter");
 		super.displayRenterDetails();
-		System.out.println("--------------------------------");
+		System.out.println("\n");
 	}
 	public String displayRenterType()
 	{
@@ -146,7 +151,7 @@ class FrequentRenter extends Renter
 	{
 		System.out.println("type: Frequent Renter");
 		super.displayRenterDetails();
-		System.out.println("--------------------------------");
+		System.out.println("\n");
 	}
 	
 	public String displayRenterType()
@@ -175,7 +180,7 @@ class CorporateRenter extends Renter
 	{
 		System.out.println("type: Corporate Renter");
 		super.displayRenterDetails();
-		System.out.println("--------------------------------");
+		System.out.println("\n");
 	}
 	public String displayRenterType()
 	{

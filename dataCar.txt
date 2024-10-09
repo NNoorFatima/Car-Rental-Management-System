@@ -1,1 +1,2 @@
-0;toyota;corolla;2002;34;abs-123;false
+2;sfad;sfda;34;2;fdag;false;Compact Car
+3;sdaf;sadf;23;34;sdaf;false;Compact Car

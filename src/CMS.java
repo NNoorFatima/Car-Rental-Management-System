@@ -14,7 +14,8 @@ public class CMS {
 	}
 	public void addCars(Car c)
 	{
-		cars.add(c);
+		if(c!= null)
+			cars.add(c);
 	}
 	public void displayCars()
 	{

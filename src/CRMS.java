@@ -7,7 +7,8 @@ public class CRMS {
 	private RMS renter_management;
 	private List<rental_transaction> transactions;
 
-	
+	CRMS()
+	{}
 	CRMS(CMS a,RMS b)
 	{
 		this.car_management=a;
