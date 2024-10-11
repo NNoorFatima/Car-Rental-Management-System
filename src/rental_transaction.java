@@ -5,6 +5,7 @@ public class rental_transaction{
 	    private int renterId;
 	    private String renter_type;
 	    private String car_type;
+	    private Boolean status;//false means rented true means returned 
 
 	    // Constructor
 	    public rental_transaction(int transId, int carId, int renterId,String typec, String typer) 
@@ -14,9 +15,18 @@ public class rental_transaction{
 	        this.renterId = renterId;
 	        this.renter_type=typer;
 	        this.car_type=typec;
+	        this.status=false;
 	    }
 
 	    // Getters and Setters
+	    public Boolean getStatus() {
+	        return status;
+	    }
+	    public void setStatus(Boolean s)
+	    {
+	    	status=s;
+	    }
+
 	    public int getTransId() {
 	        return transId;
 	    }

@@ -1,1 +1,1 @@
-1;1;1;Compact Car;Regular Renter;Not insured
+1;1;1;Luxury Car;Corporate Renter;Insured;26.480000000000004;92.4;Insured

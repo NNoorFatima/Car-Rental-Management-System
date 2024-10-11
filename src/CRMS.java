@@ -20,7 +20,6 @@ public class CRMS {
 		this.car_management=a;
 		this.renter_management=b;
 		transactions= new ArrayList<>();
-//		trans_ID=id_count++;
 	}
 	//rent car to renter 
 	public void rentCar()
@@ -78,6 +77,7 @@ public class CRMS {
 				
 				rental_transaction obj= new rental_transaction(trans_ID,car_id,renter_id,a.displayCarType(),b.displayRenterType());
 				transactions.add(obj);
+				obj.setStatus(false);
 				break;
 			}
 		}
@@ -91,10 +91,10 @@ public class CRMS {
 		while(start.hasNext()==true)
 		{
 			rental_transaction a = start.next();
-			
+			String st=a.getStatus()?"Returned\n":"Rented\n";
 			System.out.println("Transaction ID:"+a.getTransId()
 			+"\nCar ID: "+a.getCarId()+"\nRenter ID: "+a.getRenterId()
-			+ "\nCar Type: "+a.getCar_type()+"\nRenter type: "+ a.getRenter_type());
+			+ "\nCar Type: "+a.getCar_type()+"\nRenter type: "+ a.getRenter_type()+"\nStatus: "+st);
 		}	
 	}
 	
@@ -204,6 +204,12 @@ public class CRMS {
 								System.out.println("-------------------------------------------------------");
 							}
 						}
+						trans_ID=id_count++;;
+						
+						rental_transaction obj= new rental_transaction(trans_ID,car_id,renter_id,b.displayCarType(),a.displayRenterType());
+						transactions.add(obj);
+						obj.setStatus(true);
+						break;
 						
 					}
 				}

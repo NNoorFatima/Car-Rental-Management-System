@@ -291,51 +291,50 @@ public class FileManager
 	    }
 	}
 	
-	public static void updateInsuranceTransactions(CRMS tran, String filename) throws IOException {
-	    if (tran != null && !tran.getTransactions().isEmpty()) {
+	public static void updateInsuranceTransactions(CRMS tran, String filename) throws IOException
+	{
+	    if (tran != null && !tran.getTransactions().isEmpty()) 
+	    {
 	        List<String> updatedLines = new ArrayList<>();
-
-	        // Step 1: Read existing lines from the file
-	        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+	        try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
+	        {
 	            String line;
-	            while ((line = reader.readLine()) != null) {
-	                String[] parts = line.split(";");
-
-	                // Check if the line corresponds to a transaction we need to update
+	            while ((line = reader.readLine()) != null) 
+	            {
+	                String[] TranData = line.split(";");
 	                boolean isUpdated = false;
 	                for (rental_transaction a : tran.getTransactions()) 
 	                {
-	                    if (Integer.parseInt(parts[0]) == a.getTransId())
-	                    { // Assuming transId is the first element
+	                    if (Integer.parseInt(TranData[0]) == a.getTransId())
+	                    { 
 	                    	Car cartype=null;
 	                    	for(Car car: tran.getCar_management().getCars())
 	                    	{
 	                    		if(car.getID()==a.getCarId())
+	                    		{
 	                    			cartype=car;
+	                    			break;
+	                    		}
 	                    	}
-	                       //Car car = tran.getCar_management().getCarById(a.getCarId()); // Custom method to find car
 	                        String insurance = (cartype != null && cartype.isInsurable()) ? "Insured" : "Not insured";
-
-	                        // Create the updated line by appending insurance status
-	                        String updatedLine = String.join(";", parts) + ";" + insurance;
-
-	                        // Add the updated line and mark as updated
-	                        updatedLines.add(updatedLine);
+	                        String updatedLine = String.join(";", TranData) + ";" + insurance;
+	                        updatedLines.add(updatedLine);//add this string to file 
 	                        isUpdated = true;
-	                        break; // No need to check other transactions
+	                        break; 
 	                    }
 	                }
-	                if (!isUpdated) {
+	                if (!isUpdated) 
 	                    updatedLines.add(line);
-	                }
+	                
 	            }
-	        } catch (IOException e) {
+	        } 
+	        catch (IOException e) {
 	            System.out.println("Error reading the transactions file: " + e.getMessage());
 	        }
-
-	        // Step 2: Write the updated lines back to the file
-	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-	            for (String updatedLine : updatedLines) {
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) 
+	        {
+	            for (String updatedLine : updatedLines) 
+	            {
 	                writer.write(updatedLine);
 	                writer.newLine();
 	            }
@@ -345,37 +344,69 @@ public class FileManager
 	    }
 	}
 
-	public static void updateDamageCostTransactions(CRMS tran, String filename) throws IOException
+	public static void updateDamageCostTransactions(CRMS tran, String filename) throws IOException 
 	{
-		if (tran != null && !tran.getTransactions().isEmpty()) 
+	    if (tran != null && !tran.getTransactions().isEmpty()) 
 	    {
-	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
+	        List<String> updatedLines = new ArrayList<>();
+
+	        try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
 	        {
-	        	CMS b=tran.getCar_management();
-	        	RMS c=tran.getRenter_management();
-	        	
-	            for(rental_transaction a :tran.getTransactions()) // Get the last transaction
+	            String line;
+	            while ((line = reader.readLine()) != null)
 	            {
-	            	Car cartype=null;
-	            	Renter rentertype=null;
-	            	for(Car car:b.getCars() )
-	            	{
-	            		if(car.getID()==a.getCarId())
-	            			cartype=car;
-	            	}
-	            	for(Renter rent: c.getRenters())
-	            	{
-	            		if(rent.getRentID() == a.getRenterId())
-	            			rentertype=rent;	
-	            	}
-		            double damagecost= tran.calculateDamageCost(rentertype, cartype);
-		            double total_rental_cost=rentertype.getTotal_rent_fee();
-		            String insurance=(cartype.isInsurable())?"Insured":"Not insured";
-		            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
-		                         a.getCar_type() + ";" + a.getRenter_type()+";"+insurance+";"+Double.toString(damagecost)+";"
-		                        		 +Double.toString(total_rental_cost));
-		            writer.newLine(); 
+	                String[] TranData = line.split(";");
+	                boolean isUpdated = false;
+	                for (rental_transaction a : tran.getTransactions()) 
+	                {
+	                    if (Integer.parseInt(TranData[0]) == a.getTransId()) 
+	                    { 
+	                    	Car cartype=null;
+	                    	for(Car car: tran.getCar_management().getCars() )
+	                    	{
+	                    		if(car.getID()==a.getCarId())
+	                    		{	
+	                    			cartype=car;
+	                    			break;
+	                    		}
+	                    	}
+	                    	Renter rentertype=null;
+	                    	for(Renter rent: tran.getRenter_management().getRenters() )
+	                    	{
+	                    		if(rent.getRentID()==a.getRenterId())
+	                    		{	
+	                    			rentertype=rent;
+	                    			break;
+	                    		}
+	                    	}
+	                        double damagecost = tran.calculateDamageCost(rentertype, cartype);
+	                        double total_rental_cost = rentertype.getTotal_rent_fee();
+	                        String insurance = (cartype != null && cartype.isInsurable()) ? "Insured" : "Not insured";
+	                        String updatedLine = String.join(";", TranData) 
+	                        		+ ";" + insurance + ";" + damagecost + ";" + total_rental_cost;
+	                        
+	                        updatedLines.add(updatedLine);//add to file
+	                        isUpdated = true;
+	                        break; 
+	                    }
+	                }
+	                if (!isUpdated) 
+	                    updatedLines.add(line);
+	                
 	            }
+	        } 
+	        catch (IOException e) {
+	            System.out.println("Error reading the transactions file: " + e.getMessage());
+	        }
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) 
+	        {
+	            for (String updatedLine : updatedLines) {
+	                writer.write(updatedLine);
+	                writer.newLine();
+	            }
+	        }
+	        catch (IOException e) {
+	            System.out.println("Error writing to the transactions file: " + e.getMessage());
 	        }
 	    }
 	}

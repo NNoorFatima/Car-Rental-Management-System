@@ -1,1 +1,1 @@
-1;toyota;corolla;2020;12;afs;true;Compact Car
+1;toyota;corolla;2020;12;abs-123;false;Luxury Car
