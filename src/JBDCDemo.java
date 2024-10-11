@@ -88,7 +88,7 @@ public class JBDCDemo {
 	                                   "\nModel: " + model +
 	                                   "\nYear: " + year +
 	                                   "\nFee: " + fee +
-	                                   "\nStatus: " + (status == 1 ? "Available" : "Unavailable")+
+	                                   "\nStatus: " + (status == 1 ? "Rented" : "Not Rented")+
 	                                   "\nType: "+ type+
 	                				   "\nPlate: "+plate);	            }
 
@@ -101,7 +101,8 @@ public class JBDCDemo {
 	public static void removeCar(int id)
 	{
 		
-		String sql= "DELETE FROM car WHERE carid= "+id;
+		String sql="DELETE FROM car WHERE carid = " + id + " AND status = 0";
+;
 		
 		 try (Connection conn = DriverManager.getConnection(URL, username, password);
 	             Statement stmt = conn.createStatement())
@@ -110,7 +111,7 @@ public class JBDCDemo {
 			 if(Affected>0)
 				 System.out.println("Car with id "+ id +" has been removed\n");
 			 else
-				 System.out.println("No car with id "+ id +" was found\n");
+				 System.out.println("Car with id "+ id +" was either not found or is rented\n");
 
 	     } 
 		 catch (SQLException e) {
@@ -119,66 +120,6 @@ public class JBDCDemo {
 		 }
 		
 	}
-//	public static void updateCar(int id)
-//	{
-////		System.out.println("Choose the car which you want to update\n");
-////		displayCars();
-//		Scanner sc= new Scanner(System.in);
-//		int choice = id;
-//		
-//		System.out.println("What do you want to update?");
-//		System.out.println("1. Brand");
-//		System.out.println("2. Model");
-//		System.out.println("3. Fee");
-//		//System.out.println("4. Year");
-//		int option = sc.nextInt();
-//		sc.nextLine();
-//		String sql="";
-//		if(option==1)
-//		{
-//			System.out.println("Enter the new brand name");
-//			String a= sc.nextLine();  
-//			sql="UPDATE car SET brand = '"+a+"' WHERE carid ="+choice;
-//		}
-//		else if(option==2)
-//		{
-//			System.out.println("Enter the new model name");
-//			String a= sc.nextLine();  
-//			sql="UPDATE car SET model = '"+a+"' WHERE carid ="+choice;
-//		}
-//		else if(option==3)
-//		{
-//			System.out.println("Enter the new rent fee ");
-//			int a= sc.nextInt();  
-//			sc.nextLine();
-//			sql="UPDATE car SET fee = '"+a+"' WHERE carid ="+choice;
-//		}
-////		else if(option==4)
-////		{
-////			System.out.println("Enter the new year");
-////			int a= sc.nextInt();  
-////			sc.nextLine();
-////			sql="UPDATE car SET year = '"+a+"' WHERE carid ="+choice;
-////		}
-//		
-//		
-//		
-//		 try (Connection conn = DriverManager.getConnection(URL, username, password);
-//	             Statement stmt = conn.createStatement())
-//		 {
-//			 int Affected = stmt.executeUpdate(sql);
-//			 if(Affected>0)
-//				 System.out.println("Car with id " + choice +" has been updated\n");
-//			 else
-//				 System.out.println("No car with id "+ choice +" was found\n");
-//
-//	     } 
-//		 catch (SQLException e) {
-//	            System.out.println("Error occurred while retrieving cars.");
-//	            e.printStackTrace();
-//		 }
-//	}
-	
 
 	public static void updateCar(Car car)
 	{
@@ -287,8 +228,8 @@ public class JBDCDemo {
 	}
 	public static void removeRenter(int id)
 	{
-		String sql= "DELETE FROM renter WHERE renterid= "+id;
-		
+		 String sql = "DELETE FROM renter WHERE renterid = " + id + 
+                 " AND NOT EXISTS (SELECT 1 FROM cars_rented WHERE renterid = " + id + ")";
 		 try (Connection conn = DriverManager.getConnection(URL, username, password);
 	             Statement stmt = conn.createStatement())
 		 {
@@ -296,7 +237,7 @@ public class JBDCDemo {
 			 if(Affected>0)
 				 System.out.println("Renter with id "+ id +" has been removed\n");
 			 else
-				 System.out.println("No renter with id "+ id +" was found\n");
+				 System.out.println("No renter with id "+ id +" was found or they have cars rented2\n");
 
 	     } 
 		 catch (SQLException e) {
@@ -305,45 +246,51 @@ public class JBDCDemo {
 		 }
 		
 	}
-	public static void updateRenter(Renter rent) {
+	public static void updateRenter(Renter rent)
+	{
 	    String checkRenterSQL = "SELECT COUNT(*) FROM renter WHERE renterid = " + rent.getRentID();
-
+	    
 	    try (Connection conn = DriverManager.getConnection(URL, username, password);
-	         Statement checkStmt = conn.createStatement();
-	         Statement insertStmt = conn.createStatement()) {
-
-	        // Check if renter exists
+	         Statement checkStmt = conn.createStatement()) 
+	    {
 	        ResultSet rs = checkStmt.executeQuery(checkRenterSQL);
-	        if (rs.next() && rs.getInt(1) == 0)
+	        if (rs.next() && rs.getInt(1) == 0) 
 	        {
 	            System.out.println("Error: Renter with ID " + rent.getRentID() + " does not exist.");
 	            return;
 	        }
-
-	        // Begin transaction
 	        conn.setAutoCommit(false);
 
-	        if (rent.getRentedCars() != null && !rent.getRentedCars().isEmpty()) 
+	        if (rent.getRentedCars() != null && !rent.getRentedCars().isEmpty())
 	        {
-	            for (Car car : rent.getRentedCars())
+	            try (Statement insertStmt = conn.createStatement())
 	            {
-	                String insertCarSQL = "INSERT INTO cars_rented (renterid, carid, brand) VALUES ("
-	                                      + rent.getRentID() + ", " + car.getID() + ", '" + car.getBrand() + "')";
-	                insertStmt.executeUpdate(insertCarSQL);
-	            }
-	            conn.commit(); // Commit the transaction
-	            System.out.println("Cars rented by the renter added to cars_rented table.");
+	                for (Car car : rent.getRentedCars())
+	                {
+	                    String alreadyExisting = "SELECT COUNT(*) FROM cars_rented WHERE renterid = " +rent.getRentID() + " AND carid = " + car.getID();
+	                    ResultSet carCheckRs = insertStmt.executeQuery(alreadyExisting);
+	                    if (carCheckRs.next() && carCheckRs.getInt(1) > 0) 
+	                    {
+	                        System.out.println("Entry for renter ID " + rent.getRentID() + 
+	                                           " and car ID " + car.getID() + " already exists. Skipped.");
+	                        continue;
+	                    }
+	                    String insertCarSQL = "INSERT INTO cars_rented (renterid, carid, brand) VALUES ("
+	                                          + rent.getRentID() + ", " + car.getID() + ", '" + car.getBrand() + "')";
+	                    insertStmt.executeUpdate(insertCarSQL);
+	                }
+	                conn.commit(); // Commit the transaction
+	                System.out.println("Updated renter ID: " + rent.getRentID());
+	            } 
 	        } else {
-	            System.out.println("Renter has no rented cars.");
+	            System.out.println("No cars rented by renter ID " + rent.getRentID() + ". No updates made.");
 	        }
-
-	    }
-	    catch (SQLException e) {
+	    } catch (SQLException e) {
 	        System.out.println("Error occurred while updating the renter.");
 	        e.printStackTrace();
-	      
 	    }
 	}
+
 
 	
 	//Transactions

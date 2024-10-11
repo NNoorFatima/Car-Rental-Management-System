@@ -1,3 +1,1 @@
-1;1;1;Compact Car;Regular Renter
-1;100;100;Compact Car;Regular Renter
-1;1;1;Compact Car;Regular Renter
+1;1;1;Compact Car;Regular Renter;Not insured

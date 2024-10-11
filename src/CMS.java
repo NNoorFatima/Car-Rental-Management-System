@@ -21,7 +21,7 @@ public class CMS {
 	{
 		for(Car a: cars)	//displays only cars that are not rented 
 		{
-			if(a.getStatus()!=true)
+			//if(a.getStatus()!=true)
 			{
 				
 				a.displayDetails();
@@ -38,7 +38,7 @@ public class CMS {
 		        Car a = start.next();
 		        
 		       // if (a.getStatus() == false) 
-		        if(a.getID()==ID)
+		        if(a.getID()==ID && a.getStatus()==false)
 		        { // Check if the renter's ID matches the given ID
 		                
 		          start.remove(); // Safely remove the renter using the iterator

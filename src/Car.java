@@ -101,7 +101,7 @@ abstract class Car {
         System.out.println("Model: " + model);
         System.out.println("Year: " + year);
         System.out.println("Plate Number: " + plate_no);
-        System.out.println("Rental Status: " + (rental_status ? "Rented" : "Available"));
+        System.out.println("Rental Status: " + (rental_status ? "Rented" : "Not Rented"));
         System.out.println("Rental Fee: $" + rental_fee);
     }
 	public abstract String displayCarType();

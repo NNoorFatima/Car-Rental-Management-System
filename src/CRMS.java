@@ -7,6 +7,12 @@ public class CRMS {
 	private RMS renter_management;
 	private List<rental_transaction> transactions;
 
+	public static void setStartingId(int startingId) 
+	{
+        if (startingId > id_count)
+            id_count = startingId;  
+    }
+
 	CRMS()
 	{}
 	CRMS(CMS a,RMS b)
@@ -81,11 +87,14 @@ public class CRMS {
 	public void displayRentalDetails()
 	{
 		Iterator<rental_transaction> start= transactions.iterator();
-		System.out.println("displaying all the transactions made");
+		//System.out.println("displaying all the transactions made");
 		while(start.hasNext()==true)
 		{
 			rental_transaction a = start.next();
-			System.out.println("Transaction ID:"+a.getTransId()+", Car ID: "+a.getCarId()+", Renter ID: "+a.getRenterId()+ ", Car Type: "+a.getCar_type()+", Renter type: "+ a.getRenter_type());
+			
+			System.out.println("Transaction ID:"+a.getTransId()
+			+"\nCar ID: "+a.getCarId()+"\nRenter ID: "+a.getRenterId()
+			+ "\nCar Type: "+a.getCar_type()+"\nRenter type: "+ a.getRenter_type());
 		}	
 	}
 	
@@ -144,6 +153,7 @@ public class CRMS {
 	//damage cost
 	public double calculateDamageCost(Renter a, Car b)
 	{
+		System.out.println("Updation : DAMAGE COST");
 		Scanner input=new Scanner(System.in);
 		System.out.println("Enter the distance you have travelled");
 		int distance=input.nextInt();

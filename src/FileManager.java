@@ -67,20 +67,26 @@ public class FileManager
 
 	        while ((line = reader.readLine()) != null) 
 	        {
-	            if (Integer.parseInt(line.split(";")[0]) != carId) {
+	            if (Integer.parseInt(line.split(";")[0]) != carId) 
+	            {
 	                writer.write(line);
 	                writer.newLine();
 	            } 
-	            else 
+	            else if(Integer.parseInt(line.split(";")[0]) == carId && Boolean.parseBoolean(line.split(";")[6])==false)
 	            {
 	                found = true; // Car found and removed
+	            }
+	            else if(Integer.parseInt(line.split(";")[0]) == carId && Boolean.parseBoolean(line.split(";")[6])==true)
+	            {
+	            	writer.write(line);
+	                writer.newLine();
 	            }
 	        }
 	        
 	        if (found) 
 	        	System.out.println("Car with ID " + carId + " removed.");
 	        else 
-	        	System.out.println("Car with ID " + carId + " not found.");
+	        	System.out.println("Car with ID " + carId + " not found or was rented.");
 	    }
 
 	    if (!inputFile.delete() || !tempFile.renameTo(inputFile)) 
@@ -90,6 +96,7 @@ public class FileManager
 	}
 	public static void updateCar(Car car, String filename) throws IOException
 	{
+		File originalFile = new File(filename);
 	    File tempFile = new File("tempfile.txt");
 	    
 	    try (BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -100,7 +107,7 @@ public class FileManager
 	        {
 	            String[] carData = line.split(";");  
 	            int fileCarId = Integer.parseInt(carData[0]);  
-	            boolean fileStatus = Boolean.parseBoolean(carData[5]);    
+	            boolean fileStatus = Boolean.parseBoolean(carData[6]);    
 	            boolean updated = false;
 	            
 	            if (car.getID() == fileCarId)
@@ -108,24 +115,30 @@ public class FileManager
 	            	boolean crmsSt = car.getStatus();
 	            	if (fileStatus != crmsSt) 
 	            	{
-	            		carData[4] = String.valueOf(crmsSt);  
+	            		carData[6] = String.valueOf(crmsSt);  
 	            		updated = true;
 	            	}	 
 	            }
 	            
 	            if (updated) 
 	                System.out.println("Car status updated in the file.");
-	            bw.write(String.join(",", carData) + "\n");
+	            bw.write(String.join(";", carData) + "\n");
 	        }
 	    }
 	    catch (IOException e) {
+	    	System.out.println("error");
 	        e.printStackTrace();
 	    }
-	    if (tempFile.renameTo(new File(filename)))
-	        System.out.println("File successfully updated.");
-	    else 
-	    	System.out.println("Error updating file.");
 	    
+	    if (originalFile.delete()) {
+	        if (tempFile.renameTo(originalFile)) {
+	            System.out.println("File successfully updated.");
+	        } else {
+	            System.out.println("Error renaming the temp file.");
+	        }
+	    } else {
+	        System.out.println("Error deleting the original file.");
+	    }
 	}
 
 	//RENTER
@@ -153,7 +166,8 @@ public class FileManager
 	    			System.out.println("Address: " + renterData[3]);
 	    			System.out.println("Phone_no: " + renterData[4]);
 	    			System.out.println("Renter_Type: " + renterData[5]+ "\n");
-	    			if (renterData.length > 6) {
+	    			if (renterData.length > 6) 
+	    			{
 	    		        System.out.println("Cars rented by " + renterData[1] + ":");
 	    		        for (int i = 6; i < renterData.length; i += 2)
 	    		        {
@@ -186,18 +200,26 @@ public class FileManager
 
 	        while ((line = reader.readLine()) != null) 
 	        {
-	            if (Integer.parseInt(line.split(";")[0]) != renterId) {
+	        	String[] renterData=line.split(";");
+	            if (Integer.parseInt(renterData[0]) != renterId)
+	            {
 	                writer.write(line);
 	                writer.newLine();
 	            } 
-	            else 
+	            else if(Integer.parseInt(renterData[0]) == renterId && renterData.length<6)
 	                found = true; 
+	            else if (Integer.parseInt(renterData[0]) == renterId && renterData.length>=6)
+	            {
+	                writer.write(line);
+	                writer.newLine();
+	            } 
+	            
 	        }
 	        
 	        if (found) 
 	        	System.out.println("Renter with ID " + renterId + " removed.");
 	        else 
-	        	System.out.println("Renter with ID " + renterId + " not found.");
+	        	System.out.println("Renter with ID " + renterId + " not found or has cars rented.");
 	    }
 
 	    if (!inputFile.delete() || !tempFile.renameTo(inputFile)) 
@@ -207,62 +229,51 @@ public class FileManager
 	}
 	public static void updateRenter(Renter a, String filename) throws IOException
 	{
-		 List<String> renters = new ArrayList<>();
-	        boolean found = false;
-	        try (BufferedReader br = new BufferedReader(new FileReader(filename)))
-	        {
-	            String line;
-	            while ((line = br.readLine()) != null)
-	            {
-	                String[] renterDetails = line.split(";"); 
-	                int renterId = Integer.parseInt(renterDetails[0]); // Assuming ID is the first column
+	    List<String> renters = new ArrayList<>();
+	    boolean found = false;
 
-	                // Check if the current line corresponds to the renter a
-	                if (renterId == a.getRentID()) 
-	                {
-	                    found = true;
-	              
-	                    String updatedRenter="";
-	                    for(Car car : a.getRentedCars())
-	                    {
-	                    	updatedRenter=a.getRentID() + ";" + a.getName() + ";" + a.getEmail() + ";" 
-	                    +a.getAddress()+";"+a.getPh_no()+ ";"+a.displayRenterType()
-	                    			+";"+ car.getBrand()+";"+car.getID();
-	                    	//System.out.println(updatedRenter);
-	                    }
-	                    renters.add(updatedRenter);
-	                    System.out.println("Updated\n");
-	                } 
-	                else 
-	                    renters.add(line);
+	    try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
+	    {
+	        String line;
+	        while ((line = br.readLine()) != null) {
+	            String[] renterDetails = line.split(";"); 
+	            int renterId = Integer.parseInt(renterDetails[0]); 
+
+	            if (renterId == a.getRentID())
+	            {
+	                found = true;
+	                String updatedRenter = a.getRentID() + ";" + a.getName() + ";" + a.getEmail() + ";" 
+	                    + a.getAddress() + ";" + a.getPh_no() + ";" + a.displayRenterType();
 	                
+	                for (Car car : a.getRentedCars()) 
+	                    updatedRenter += ";" + car.getBrand() + ";" + car.getID();
+	                
+	                renters.add(updatedRenter);
+	                System.out.println("Updated renter with ID: " + a.getRentID());
 	            }
-	        } 
-	        catch (IOException e) {
-	            System.out.println("Error reading the file: " + e.getMessage());
+	            else
+	                renters.add(line);  
 	        }
-	        if (!found) //first entry in the file 
-	        {
-	            String newRenter = a.getRentID() + ";" + a.getName() + ";" + a.getEmail() + ";" +a.getAddress()+";"+a.getPh_no()+";"+a.displayRenterType();
-	            for (Car car : a.getRentedCars()) 
-	                newRenter += ";" + car.getBrand() + ";" + car.getID();
-	            
-	            renters.add(newRenter);
-	            System.out.println("New renter added: " + newRenter);
+	    } 
+	    catch (IOException e) {
+	        System.out.println("Error reading the Renter file: " + e.getMessage());
+	    }
+	    try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+	        for (String renter : renters) {
+	            bw.write(renter);
+	            bw.newLine();
 	        }
-
-	        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) 
-	        {
-	            for (String renter : renters) 
-	            {
-	                bw.write(renter);
-	                bw.newLine();
-	            }
-	        } 
-	        catch (IOException e) {
-	            System.out.println("Error writing to the file: " + e.getMessage());
-	        }	
+	    }
+	    catch (IOException e) {
+	        System.out.println("Error writing to the file: " + e.getMessage());
+	    }
 	}
+
+	
+	
+	
+	
+	
 	
 	//TRANSACTIONS
 	public static void saveTransactions(CRMS tran, String filename) throws IOException
@@ -280,27 +291,60 @@ public class FileManager
 	    }
 	}
 	
-	public static void updateInsuranceTransactions(CRMS tran, String filename) throws IOException
-	{
-		if (tran != null && !tran.getTransactions().isEmpty()) 
-	    {
-	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
-	        {
-	        	CMS b=tran.getCar_management();
-	        	RMS c=tran.getRenter_management();
-	            for(rental_transaction a :tran.getTransactions()) //llop through all transactions 
-	            {
-	            	Car ab= b.getCars().get(a.getCarId()-1);
-		            String insurance=(ab.isInsurable())?"Insured":"Not insured";
-		            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
-		                         a.getCar_type() + ";" + a.getRenter_type()+";"+insurance);
-		            
-		            writer.newLine(); 
+	public static void updateInsuranceTransactions(CRMS tran, String filename) throws IOException {
+	    if (tran != null && !tran.getTransactions().isEmpty()) {
+	        List<String> updatedLines = new ArrayList<>();
+
+	        // Step 1: Read existing lines from the file
+	        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+	            String line;
+	            while ((line = reader.readLine()) != null) {
+	                String[] parts = line.split(";");
+
+	                // Check if the line corresponds to a transaction we need to update
+	                boolean isUpdated = false;
+	                for (rental_transaction a : tran.getTransactions()) 
+	                {
+	                    if (Integer.parseInt(parts[0]) == a.getTransId())
+	                    { // Assuming transId is the first element
+	                    	Car cartype=null;
+	                    	for(Car car: tran.getCar_management().getCars())
+	                    	{
+	                    		if(car.getID()==a.getCarId())
+	                    			cartype=car;
+	                    	}
+	                       //Car car = tran.getCar_management().getCarById(a.getCarId()); // Custom method to find car
+	                        String insurance = (cartype != null && cartype.isInsurable()) ? "Insured" : "Not insured";
+
+	                        // Create the updated line by appending insurance status
+	                        String updatedLine = String.join(";", parts) + ";" + insurance;
+
+	                        // Add the updated line and mark as updated
+	                        updatedLines.add(updatedLine);
+	                        isUpdated = true;
+	                        break; // No need to check other transactions
+	                    }
+	                }
+	                if (!isUpdated) {
+	                    updatedLines.add(line);
+	                }
 	            }
+	        } catch (IOException e) {
+	            System.out.println("Error reading the transactions file: " + e.getMessage());
+	        }
+
+	        // Step 2: Write the updated lines back to the file
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+	            for (String updatedLine : updatedLines) {
+	                writer.write(updatedLine);
+	                writer.newLine();
+	            }
+	        } catch (IOException e) {
+	            System.out.println("Error writing to the transactions file: " + e.getMessage());
 	        }
 	    }
 	}
-	
+
 	public static void updateDamageCostTransactions(CRMS tran, String filename) throws IOException
 	{
 		if (tran != null && !tran.getTransactions().isEmpty()) 
@@ -312,15 +356,24 @@ public class FileManager
 	        	
 	            for(rental_transaction a :tran.getTransactions()) // Get the last transaction
 	            {
-	            	Car ab= b.getCars().get(a.getCarId()-1);
-		            Renter ba=c.getRenters().get(a.getRenterId()-1);
-		            double damagecost= tran.calculateDamageCost(ba, ab);
-		            double total_rental_cost=ba.getTotal_rent_fee();
-		            String insurance=(ab.isInsurable())?"Insured":"Not insured";
+	            	Car cartype=null;
+	            	Renter rentertype=null;
+	            	for(Car car:b.getCars() )
+	            	{
+	            		if(car.getID()==a.getCarId())
+	            			cartype=car;
+	            	}
+	            	for(Renter rent: c.getRenters())
+	            	{
+	            		if(rent.getRentID() == a.getRenterId())
+	            			rentertype=rent;	
+	            	}
+		            double damagecost= tran.calculateDamageCost(rentertype, cartype);
+		            double total_rental_cost=rentertype.getTotal_rent_fee();
+		            String insurance=(cartype.isInsurable())?"Insured":"Not insured";
 		            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
 		                         a.getCar_type() + ";" + a.getRenter_type()+";"+insurance+";"+Double.toString(damagecost)+";"
 		                        		 +Double.toString(total_rental_cost));
-		            
 		            writer.newLine(); 
 	            }
 	        }

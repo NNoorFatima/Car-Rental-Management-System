@@ -1,1 +1,1 @@
-1;toyota;corolla;2020;54;abs0123;false;Compact Car
+1;toyota;corolla;2020;12;afs;true;Compact Car
