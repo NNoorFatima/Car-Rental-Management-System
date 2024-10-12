@@ -120,8 +120,8 @@ public class FileManager
 	            	}	 
 	            }
 	            
-	            if (updated) 
-	                System.out.println("Car status updated in the file.");
+//	            if (updated) 
+//	                System.out.println("Car status updated in the file.");
 	            bw.write(String.join(";", carData) + "\n");
 	        }
 	    }
@@ -235,7 +235,8 @@ public class FileManager
 	    try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
 	    {
 	        String line;
-	        while ((line = br.readLine()) != null) {
+	        while ((line = br.readLine()) != null)
+	        {
 	            String[] renterDetails = line.split(";"); 
 	            int renterId = Integer.parseInt(renterDetails[0]); 
 
@@ -283,8 +284,9 @@ public class FileManager
 	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true)))
 	        {
 	            rental_transaction a = tran.getTransactions().get(tran.getTransactions().size()-1); // Get the last transaction
+	            String st = a.getStatus() ? "Returned" : "Rented";
 	            writer.write(a.getTransId() + ";" + a.getCarId() + ";" + a.getRenterId() + ";" + 
-	                         a.getCar_type() + ";" + a.getRenter_type());
+	                         a.getCar_type() + ";" + a.getRenter_type()+";"+st);
 	            
 	            writer.newLine(); 
 	        }
@@ -427,16 +429,17 @@ public class FileManager
 	    			System.out.println("Renter ID: " + transData[2]);
 	    			System.out.println("Car Type: " + transData[3]);
 	    			System.out.println("Renter Type: " + transData[4]);
-	    			if(transData.length>5)
-	    				System.out.println("Insurance: " + transData[5]);
+	    			System.out.println("Transaction Status: " + transData[5]);
+	    			if(transData.length>6)
+	    				System.out.println("Insurance: " + transData[6]);
 	    			else 
 	    				System.out.println("Insurance: N/a");
 	    			if(transData.length>6)
-	    				System.out.println("Damage Cost: " + transData[6]);
+	    				System.out.println("Damage Cost: " + transData[7]);
 	    			else 
 	    				System.out.println("Damage Cost: N/a");
 	    			if(transData.length>7)
-	    				System.out.println("Total Rental Fee: "+ transData[7]+"\n");
+	    				System.out.println("Total Rental Fee: "+ transData[8]+"\n");
 	    			else 
 	    				System.out.println("Total Rental Fee: N/a");
 	    		line =reader.readLine();
@@ -491,4 +494,53 @@ public class FileManager
 	    }
 		
 	}
+	
+	
+	
+	public static void returnCarTransactions(CRMS tran, String filename) throws IOException 
+	{
+	    // Extract the last transaction
+	    rental_transaction lastTransaction = tran.getTransactions().get(tran.getTransactions().size() - 1);
+	    saveTransactions(tran,filename);
+	    System.out.println(lastTransaction.getTransId());
+	    int renterID = lastTransaction.getRenterId();
+
+	    String  renterFile = "dataRenter.txt"; // File containing renter data
+	    String carFile ="dataCar.txt";    // File containing car data
+
+	 
+
+	    //remove from CRMS
+	    for(Renter rent: tran.getRenter_management().getRenters())
+	    {
+	    	if(rent.getRentID()==lastTransaction.getRenterId())
+	    	{
+	    		for(Car car: rent.getRentedCars()) 
+	    		{
+	    			if(car.getID()==lastTransaction.getCarId())
+	    			{
+	    				rent.getRentedCars().remove(car);
+	    				updateCar(car,carFile);//updates in file 
+	    				break;
+	    			}
+	    		}
+	    	}
+	    }
+	    //update file
+	    for (Renter renter : tran.getRenter_management().getRenters()) 
+	    {
+	        if (renter.getRentID() == renterID) 
+	        { 
+	        	updateRenter(renter,renterFile); //updates in file
+	        	break; 
+	        }
+	    }   
+	    // Set the transaction status to true (returned)
+	   //  a= new rental_transaction()
+	    lastTransaction.setStatus(true);
+	    
+	}
+
+
+
 }

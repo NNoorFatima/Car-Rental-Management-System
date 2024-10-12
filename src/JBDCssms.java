@@ -472,7 +472,7 @@ public class JBDCssms {
              }
              //( lastTransaction);
              tran.getTransactions().get(tran.getTransactions().size()-1).setStatus(true);
-            saveTransactions(tran);
+             saveTransactions(tran);
              
 		 }
 		 catch (SQLException e) {

@@ -1,1 +1,1 @@
-1;Noot;Noor.com;G10;0330;Corporate Renter;toyota;1
+1;noor;noor.com;gf1;123;Regular Renter;kia;2

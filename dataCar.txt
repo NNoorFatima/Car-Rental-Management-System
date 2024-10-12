@@ -1,1 +1,2 @@
-1;toyota;corolla;2020;12;abs-123;false;Luxury Car
+1;ford;focus;2020;12;f-12;false;Compact Car
+2;kia;optima;2020;12;h1k;true;SUV Car

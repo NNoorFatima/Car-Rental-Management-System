@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,11 +11,29 @@ import java.sql.Statement;
 import java.util.*;
 public class Main {
 
+	 private static void createFileIfNotExists(String filename) 
+	 {
+	        File file = new File(filename);
+	        if (!file.exists())
+	        {
+	            try {
+	                if (file.createNewFile()) 
+	                    System.out.println("Created new file: " + filename);
+	                else 
+	                    System.out.println("Failed to create file: " + filename);
+	                
+	            } 
+	            catch (IOException e) {
+	                System.out.println("Error creating file: " + e.getMessage());
+	            }
+	        } 
+	        else 
+	            System.out.println("File already exists: " + filename);
+	        
+	    }
 	public static void main(String[] args)
 	{
 		// TODO Auto-generated method stub
-
-		
 		 CMS car_management= new CMS();
 		 RMS renter_management= new RMS();
 		 CRMS rent_transactions= new CRMS(car_management,renter_management);
@@ -52,6 +71,9 @@ public class Main {
 		 {
 			 myStorage=new FileManager();
 			 try {
+				 createFileIfNotExists(carfilename);
+	                createFileIfNotExists(renterfilename);
+	                createFileIfNotExists(tranfilename);
 				 strtid= initializeIdsFromFileMin(carfilename); //min  car id
 				 Car.setStartingId(strtid); 
 				 strtid=initializeIdsFromFileMin(renterfilename);	//min  renter id
@@ -67,7 +89,7 @@ public class Main {
 				 CRMS.setStartingId(strtid);
 			 }
 			 catch (IOException  e){	
-				System.out.println("Error"); 
+				System.out.println("Error in loading data\n"); 
 			 }
 			 
 		 }
@@ -248,22 +270,20 @@ public class Main {
 						 if(car_type!=null)
 						 {
 							 if(storage==1)
-							 {
 								 handleCarFile(car_type,carfilename,myStorage,2);
-								 handleCarFile(car_type,carfilename,myStorage,3);
-							 }
+							 else if(storage==2)
+								 handleCarMySQL(car_type,mySqlstorage,2);
+							 else if(storage==3)
+								 handleCarSSMS(car_type,mySsmsstorage,2);
 						 }
 					 }
+					 
 					 if(storage==2)
-					 {
-						 handleCarMySQL(car_type,mySqlstorage,2);
 						 handleCarMySQL(car_type,mySqlstorage,3);
-					 }
+					 else if(storage==1)
+						 handleCarFile(car_type,carfilename,myStorage,3);
 					 else if(storage==3)
-					 {
-						 handleCarSSMS(car_type,mySsmsstorage,2);
-						 handleCarSSMS(car_type,mySsmsstorage,3);
-					 }
+						 handleCarSSMS(car_type,mySsmsstorage,3); 
 					 System.out.println("------------------------------------------");
 					 System.out.println("\nDisplaying cars from CRMS\n");
 					 car_management.displayCars();
@@ -441,23 +461,19 @@ public class Main {
 						 if(renter_type!=null)
 						 {
 							 if(storage==1)
-							 {
 								 handleRenterFile(renter_type,renterfilename,myStorage,2);
-								 handleRenterFile(renter_type,renterfilename,myStorage,3);
-							 }
-							 
+							 else if(storage==2)
+								 handleRenterMySQL(renter_type,mySqlstorage,2);
+							 else if(storage==3)
+								 handleRenterSSMS(renter_type,mySsmsstorage,2);//update
 						 }
 					 }
 					 if(storage==2)
-					 {
-						 handleRenterMySQL(renter_type,mySqlstorage,2);
 						 handleRenterMySQL(renter_type,mySqlstorage,3);
-					 }
-					 else if(storage==3)
-					 {
-						 handleRenterSSMS(renter_type,mySsmsstorage,2);//update
+					 else if(storage==1)
+						 handleRenterFile(renter_type,renterfilename,myStorage,3);
+					 else if(storage==3) 
 						 handleRenterSSMS(renter_type,mySsmsstorage,3);//display
-					 }
 					
 					 System.out.println("------------------------------------------");
 					 System.out.println("Displaying renters from CRMS\n");
@@ -594,11 +610,17 @@ public class Main {
 					 System.out.println("Enter the id of the car you want to return");
 					 int car_id= sc.nextInt();
 					 rent_transactions.returnCar(renter_id, car_id);
-					 if(storage==2)//remove from cars rented table 
+					 
+					 if(storage==1)
+					 {
+						
+						 handleTransactionFile(rent_transactions,tranfilename,myStorage,5);
+					 }
+					 else if(storage==2)//remove from cars rented table 
 						 handleTransactionMySQL(rent_transactions,mySqlstorage,5);
 					 else if(storage==3)
 						 handleTransactionSSMS(rent_transactions,mySsmsstorage,5);
-					 
+					
 				 }
 			 }
 			 else if(choice==4)
@@ -609,7 +631,6 @@ public class Main {
 	}
 
 	
-	//sdaf
 	//CRUD FILE 
 	public static void handleRenterFile(Renter rent, String filename, FileManager storage,int option)
 	{
@@ -656,7 +677,7 @@ public class Main {
 	
 	public static void handleCarFile(Car car,String filename,FileManager storage,int option)
 	{
-		if(car==null && option==1)
+		if(car==null && (option==1 || option ==4))
 			return;
 		Scanner sc= new Scanner(System.in);		
 			if(option==1)
@@ -719,7 +740,7 @@ public class Main {
 			        storage.displayTransactions(filename);
 				 } 
 				 catch (IOException e) {
-				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				        System.out.println("An error occurred while displaying the car data: " + e.getMessage());
 				 }
 			}
 			else if(option==3)//add insurance
@@ -728,7 +749,7 @@ public class Main {
 			        storage.updateInsuranceTransactions(tran, filename); 
 				 } 
 				 catch (IOException e) {
-				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				        System.out.println("An error occurred while adding car insurance: " + e.getMessage());
 				 }
 			}
 			else if(option==4)//add damage cost + rental cost
@@ -737,9 +758,19 @@ public class Main {
 			        storage.updateDamageCostTransactions(tran, filename); 
 				 } 
 				 catch (IOException e) {
-				        System.out.println("An error occurred while saving the car data: " + e.getMessage());
+				        System.out.println("An error occurred while adding car costs: " + e.getMessage());
 				 }
 			}	
+			else if(option==5)
+			{
+				try {
+					System.out.println("goinf to return ");
+			        storage.returnCarTransactions(tran, filename); 
+				 } 
+				 catch (IOException e) {
+				        System.out.println("An error occurred while returning car: " + e.getMessage());
+				 }
+			}
 		
 	}
 
@@ -752,8 +783,9 @@ public class Main {
 	        while ((line = carReader.readLine()) != null)
 	        {
 	            String[] carData = line.split(";");
-	            if (carData.length >= 8)
+	            if (carData.length >= 7)
 	            {
+	            	//System.out.println("Sf");
 	                int id = Integer.parseInt(carData[0]);
 	                String brand = carData[1];
 	                String model = carData[2];
@@ -847,7 +879,7 @@ public class Main {
 	        while ((line = transactionReader.readLine()) != null) 
 	        {
 	            String[] transactionData = line.split(";");
-	            if (transactionData.length == 6)
+	            if (transactionData.length >= 4)
 	            {
 	                int transId = Integer.parseInt(transactionData[0]);
 	                int carId = Integer.parseInt(transactionData[1]);
