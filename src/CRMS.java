@@ -7,6 +7,8 @@ public class CRMS {
 	private RMS renter_management;
 	private List<rental_transaction> transactions;
 
+	
+	
 	public static void setStartingId(int startingId) 
 	{
         if (startingId > id_count)
