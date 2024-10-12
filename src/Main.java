@@ -92,9 +92,12 @@ public class Main {
 			 Car.setStartingId(a[0]);
 			 int[] b=getMinMaxRenterIdSSMS();
 			 Renter.setStartingId(b[0]);
+			 int[] c= getMinMaxTransactionIdSSMS();
+			 CRMS.setStartingId(c[0]);
 			 addFromSSMStoCRMS(rent_transactions);
 			 Car.setStartingId(a[1]+1);
 			 Renter.setStartingId(b[1]+1);
+			 CRMS.setStartingId(c[1]+1);
 		 }
 		 
 		 //MAIN MENUUU
@@ -442,17 +445,18 @@ public class Main {
 								 handleRenterFile(renter_type,renterfilename,myStorage,2);
 								 handleRenterFile(renter_type,renterfilename,myStorage,3);
 							 }
-							 else if(storage==2)
-							 {
-								 handleRenterMySQL(renter_type,mySqlstorage,2);
-								 handleRenterMySQL(renter_type,mySqlstorage,3);
-							 }
-							 else if(storage==3)
-							 {
-								 handleRenterSSMS(renter_type,mySsmsstorage,2);//update
-								 handleRenterSSMS(renter_type,mySsmsstorage,3);//display
-							 }
+							 
 						 }
+					 }
+					 if(storage==2)
+					 {
+						 handleRenterMySQL(renter_type,mySqlstorage,2);
+						 handleRenterMySQL(renter_type,mySqlstorage,3);
+					 }
+					 else if(storage==3)
+					 {
+						 handleRenterSSMS(renter_type,mySsmsstorage,2);//update
+						 handleRenterSSMS(renter_type,mySsmsstorage,3);//display
 					 }
 					
 					 System.out.println("------------------------------------------");
@@ -544,6 +548,8 @@ public class Main {
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,1);
 					 else if(storage==2)
 						 handleTransactionMySQL(rent_transactions,mySqlstorage,1);
+					 else if(storage==3)
+						 handleTransactionSSMS(rent_transactions,mySsmsstorage,1);
 					 
 				 }
 				 else if(choice_3==2)
@@ -557,6 +563,8 @@ public class Main {
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,2);
 					 else if(storage==2)
 						 handleTransactionMySQL(rent_transactions,mySqlstorage,2);
+					 else if(storage==3)
+						 handleTransactionSSMS(rent_transactions,mySsmsstorage,2);
 
 				 }
 				 else if (choice_3==3)
@@ -566,6 +574,8 @@ public class Main {
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,4);
 					 else if(storage==2)
 						 handleTransactionMySQL(rent_transactions,mySqlstorage,4);
+					 else if(storage==3)
+						 handleTransactionSSMS(rent_transactions,mySsmsstorage,4);
 				 }
 				 else if(choice_3==4)
 				 {
@@ -574,6 +584,8 @@ public class Main {
 						 handleTransactionFile(rent_transactions,tranfilename,myStorage,3);
 					 else if(storage==2)
 						 handleTransactionMySQL(rent_transactions,mySqlstorage,3);
+					 else if(storage==3)
+						 handleTransactionSSMS(rent_transactions,mySsmsstorage,3);
 				 }
 				 else if(choice_3==5) //RETURN CAR
 				 {
@@ -584,6 +596,8 @@ public class Main {
 					 rent_transactions.returnCar(renter_id, car_id);
 					 if(storage==2)//remove from cars rented table 
 						 handleTransactionMySQL(rent_transactions,mySqlstorage,5);
+					 else if(storage==3)
+						 handleTransactionSSMS(rent_transactions,mySsmsstorage,5);
 					 
 				 }
 			 }
@@ -1084,9 +1098,6 @@ public class Main {
 	            int renterid = rstran.getInt("renterid");
 	            String car_type = rstran.getString("car_type");
 	            String renter_type = rstran.getString("renter_type");
-//	            Double damagecost = rstran.getDouble("damage_cost");
-//	            Double total_rental_cost = rstran.getDouble("total_rental_cost");
-//	            boolean insurance = rstran.getBoolean("insurance");
 	           
 	            rental_transaction newTran= new rental_transaction(tranid,carid,renterid,car_type,renter_type);
 	            trans.add(newTran);
@@ -1209,6 +1220,21 @@ public class Main {
 
 		
 	//CRUD SSMS
+	public static void handleTransactionSSMS(CRMS tran, JBDCssms s, int option)
+	{
+		if(tran==null)
+			return;
+		if(option==1)
+			s.saveTransactions(tran);
+		else if(option==2)
+			s.displayTransactions();
+		else if(option==3)
+			s.updateInsuranceTransactions(tran);
+		else if(option==4)
+			s.updateCostTransactions(tran);
+		else if(option==5)
+			s.returnTransactions(tran);
+	}	
 	public static void handleRenterSSMS(Renter rent,JBDCssms s,int option)
 	{
 		if(rent==null && (option==1 || option==3))
@@ -1279,13 +1305,15 @@ public class Main {
 		            if ("CompactCar".equals(type))
 		            {
 		                car = new CompactCar(brand, model, year, plate, status, fee);
-		               // System.out.println(type);
+		                System.out.println(type);
 		            } 
-		            else if ("SUVCar".equals(type)) {
+		            else if ("SUV".equals(type)) {
 		                car = new SUV(brand, model, year, plate, status, fee);
+		                System.out.println(type);
 		            } 
 		            else if ("LuxuryCar".equals(type)) {
 		                car = new LuxuryCar(brand, model, year, plate, status, fee);
+		                System.out.println(type);
 		            }
 		            
 		            if (car != null) {
@@ -1344,6 +1372,24 @@ public class Main {
 		                crms.getRenter_management().addRenters(rent);
 		            }
 		        }
+		        //TRANSACTIONS
+		        List <rental_transaction> trans=new ArrayList<>();
+		        stmttran = conn.createStatement();
+		        String sqlTran = "SELECT tranID,carid,renterid,car_type,renter_type,total_rental_cost,damage_cost,insurance FROM transactions";
+		        rstran = stmttran.executeQuery(sqlTran);
+		
+		        while (rstran.next()) 
+		        {
+		            int tranid = rstran.getInt("tranID");
+		            int carid = rstran.getInt("carid");
+		            int renterid = rstran.getInt("renterid");
+		            String car_type = rstran.getString("car_type");
+		            String renter_type = rstran.getString("renter_type");
+		           
+		            rental_transaction newTran= new rental_transaction(tranid,carid,renterid,car_type,renter_type);
+		            trans.add(newTran);
+		        }
+		        crms.setTransactions(trans);
 		    }
 		    catch (Exception e) {
 		    	e.printStackTrace();
@@ -1365,9 +1411,6 @@ public class Main {
 		    }
 		   
 	        
-	        
-		    
-		        
 	}
 	public static int[] getMinMaxCarIdSSMS() 
 	{
@@ -1435,7 +1478,39 @@ public class Main {
 
 	    return minMaxRenterId;  // Return array containing min and max renterid
 	}
-	
+	public static int[] getMinMaxTransactionIdSSMS()
+	{
+			Connection conn = null;
+		    Statement stmt = null;
+		    ResultSet rs = null;
+		    int[] minMaxTranId = new int[2]; // Index 0: min, Index 1: max
+
+		    try {
+		        conn = DriverManager.getConnection("jdbc:sqlserver://FATIMA\\SQLEXPRESS;databaseName=CRMS;integratedSecurity=true;trustServerCertificate=true");
+		        stmt = conn.createStatement();
+
+		        String sql = "SELECT MIN(tranID) AS min_tranid, MAX(tranID) AS max_tranid FROM transactions";
+		        rs = stmt.executeQuery(sql);
+
+		        if (rs.next()) {
+		        	minMaxTranId[0] = rs.getInt("min_tranid");  // Minimum renterid
+		        	minMaxTranId[1] = rs.getInt("max_tranid");  // Maximum renterid
+		        }
+
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    } finally {
+		        try {
+		            if (rs != null) rs.close();
+		            if (stmt != null) stmt.close();
+		            if (conn != null) conn.close();
+		        } catch (SQLException ex) {
+		            ex.printStackTrace();
+		        }
+		    }
+
+		    return minMaxTranId;  // R
+	}
 	
 	
 	

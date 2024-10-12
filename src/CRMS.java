@@ -120,7 +120,7 @@ public class CRMS {
 			System.out.println("The total rental cost {for all cars in list} for renter ID: "+ a.getRentID() +" is "+ total_cost_renter);
 			System.out.println("---------------------------------------------------------------------");
 		}
-	
+		System.out.println("\n");
 		
 	}
 	//add insurance option, if insurable 
@@ -148,6 +148,7 @@ public class CRMS {
 
 			}
 		}
+		System.out.println("\n");
 	}
 	
 	//damage cost

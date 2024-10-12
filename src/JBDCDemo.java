@@ -300,9 +300,9 @@ public class JBDCDemo {
 		 rental_transaction a = tran.getTransactions().get(tran.getTransactions().size()-1);
 		 String st= a.getStatus()?"Returned":"Rented";
 		 String sql="INSERT INTO transactions (tranID, carid, renterID, car_type, renter_type,status) VALUES ("
-	         + a.getTransId() + ", " // No quotes around numeric values
-	         + a.getCarId() + ", "   // No quotes around numeric values
-	         + a.getRenterId() + ", '" // String values need single quotes
+	         + a.getTransId() + ", " 
+	         + a.getCarId() + ", "   
+	         + a.getRenterId() + ", '"
 	         + a.getCar_type() + "', '"
 	         + a.getRenter_type() + "','"
 	         +st+"')";

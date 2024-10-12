@@ -75,7 +75,7 @@ public class JBDCssms {
 	                                   "\nStatus: " + (status == 1 ? "Rented" : "Not Rented")+
 	                                   "\nType: "+ type+
 	                				   "\nPlate: "+plate+"\n");	
-	                }
+	             }
 
 	        } 
 		 catch (SQLException e) {
@@ -275,7 +275,211 @@ public class JBDCssms {
 
 	}
 
+	//TRANSACTIONS
+	public static void saveTransactions(CRMS tran) {
+	    // Assuming this gets the latest transaction
+	    rental_transaction a = tran.getTransactions().get(tran.getTransactions().size() - 1);
+	    
+	    // Prepare status string
+	    String st = a.getStatus() ? "Returned" : "Rented";
 
+	    // Create SQL query
+	    String sql = "INSERT INTO transactions (tranID, carid, renterID, car_type, renter_type, status) VALUES ("
+	            + a.getTransId() + ", "  
+	            + a.getCarId() + ", "   
+	            + a.getRenterId() + ", '"  
+	            + a.getCar_type() + "', '"
+	            + a.getRenter_type() + "', '"
+	            + st + "')";
+	    try (Connection conn = DriverManager.getConnection(URL);
+	         Statement stmt = conn.createStatement()) {
+
+	        // Execute SQL insertion
+	        int rowsInserted = stmt.executeUpdate(sql);
+	        if (rowsInserted > 0) {
+	            System.out.println("Transaction was added successfully!");
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error occurred while adding the transaction.");
+	        e.printStackTrace();
+	    }
+	}
+
+	public static void displayTransactions()
+	{
+		String sql = "SELECT *FROM transactions";
+		try (Connection conn = DriverManager.getConnection(URL);
+	             Statement stmt = conn.createStatement();
+	             ResultSet rs = stmt.executeQuery(sql)) 
+		 {
+	            while (rs.next()) 
+	            {
+	                int id = rs.getInt("tranID");
+	                int carid = rs.getInt("carid");
+	                int renterid = rs.getInt("renterid");
+	                String car_type = rs.getString("car_type");
+	                String renter_type = rs.getString("renter_type");
+	                Double totalRentalCost = rs.getObject("total_rental_cost", Double.class); // Using getObject to handle nulls
+	                Double damageCost = rs.getObject("damage_cost", Double.class);
+	                Boolean isInsured = rs.getObject("insurance", Boolean.class);
+	                String status=rs.getString("status");
+	                System.out.println("TranID: " + id +
+	                                   "\nCarID: " + carid +
+	                                   "\nRenterID: " + renterid +
+	                                   "\nCar_type: " + car_type +
+	                                   "\nRenter_type: " + renter_type+
+						                "\nTotal Rental Cost: " + (totalRentalCost != null ? totalRentalCost : "N/A") +
+					                    "\nDamage Cost: " + (damageCost != null ? damageCost : "N/A")+
+					                    "\nIs Insured: " + (isInsured != null ? (isInsured ? "Insured\n" : "Not Insured\n") : "N/A\n")
+					                    +"Status: "+ status + "\n");;
+	            }
+
+		 } 
+		 catch (SQLException e) 
+		 {
+	            System.out.println("Error occurred while retrieving Transaction .");
+	            e.printStackTrace();
+		 }
+	}
+	public static void updateInsuranceTransactions(CRMS tran)
+	{
+		if (tran != null && !tran.getTransactions().isEmpty()) 
+        {
+            try (Connection conn = DriverManager.getConnection(URL);
+                 Statement stmt = conn.createStatement()) {
+
+                for (rental_transaction a : tran.getTransactions())
+                {
+                    Car cartype = null;
+                    for (Car car : tran.getCar_management().getCars())
+                    {
+                        if (car.getID() == a.getCarId()) 
+                        {
+                            cartype = car;
+                            break;
+                        }
+                    }
+                    if (cartype != null)
+                    {
+                    	int insurance = cartype.isInsurable() ? 1 :0;
+                        String updateInsuranceSQL = "UPDATE transactions SET insurance = " + insurance +
+                                                    " WHERE tranID = " + a.getTransId();
+                        int rowsAffected = stmt.executeUpdate(updateInsuranceSQL);
+                        if (rowsAffected > 0) 
+                            System.out.println("Updated insurance status for transaction ID: " + a.getTransId());
+                        else 
+                            System.out.println("No update occurred for transaction ID: " + a.getTransId());
+                    }
+                }
+
+            } 
+            catch (SQLException e) {
+                System.out.println("Error occurred while updating insurance status.");
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("No transactions available to update.");
+        }
+	}
+	public static void updateCostTransactions(CRMS tran) 
+	{
+		if (tran != null && !tran.getTransactions().isEmpty()) 
+	    {
+	        try (Connection conn = DriverManager.getConnection(URL);
+	             Statement stmt = conn.createStatement()) 
+	        {
+	            for (rental_transaction a : tran.getTransactions())
+	            {
+	                Car cartype = null;
+	                Renter rentertype = null;
+	                for (Car car : tran.getCar_management().getCars())
+	                {
+	                    if (car.getID() == a.getCarId()) 
+	                    {
+	                        cartype = car;
+	                        break;
+	                    }
+	                }
+	                for (Renter rent : tran.getRenter_management().getRenters())
+	                {
+	                    if (rent.getRentID() == a.getRenterId())  // Fixed this check to compare renterID
+	                    {
+	                        rentertype = rent;
+	                        break;
+	                    }
+	                }
+
+	                if (cartype != null && rentertype != null)
+	                {
+	                    float damagecost = (float)tran.calculateDamageCost(rentertype, cartype);
+	                    float total_rental_cost =(float) rentertype.getTotal_rent_fee();	                  
+	                    String updateSQL = "UPDATE transactions SET damage_cost = " + damagecost + 
+	                                       ", total_rental_cost = " + total_rental_cost + 
+	                                       " WHERE tranID = " + a.getTransId();
+	                    int rowsAffected = stmt.executeUpdate(updateSQL);
+	                    if (rowsAffected > 0) 
+	                        System.out.println("Updated cost for transaction ID: " + a.getTransId());
+	                    else 
+	                        System.out.println("No update occurred for transaction ID: " + a.getTransId());
+	                } else {
+	                    System.out.println("Car or Renter not found for transaction ID: " + a.getTransId());
+	                }
+	            }
+	        } 
+	        catch (SQLException e) 
+	        {
+	            System.out.println("Error occurred while updating cost transactions.");
+	            e.printStackTrace();
+	        }
+	    } 
+	    else 
+	    {
+	        System.out.println("No transactions available to update.");
+	    }
+	}
+	public static void returnTransactions(CRMS tran) 
+	{
+		rental_transaction lastTransaction = tran.getTransactions().get(tran.getTransactions().size()-1);
+		String sql= "DELETE FROM cars_rented WHERE carid= " + lastTransaction.getCarId()
+					+" AND renterid= " + lastTransaction.getRenterId() ;
+		
+		 try (Connection conn = DriverManager.getConnection(URL);
+		         Statement stmt = conn.createStatement()) 
+		 {
+			 int rowsAffected = stmt.executeUpdate(sql);
+             if (rowsAffected > 0) 
+                 System.out.println("Deleted from cars_rented table");
+             else 
+                 System.out.println("Couldn't delete from cars_rented table");
+             Car cartype=null;
+             for(Car car: tran.getCar_management().getCars())
+             {
+            	 if(car.getID()==lastTransaction.getCarId())
+            	 {
+            		 cartype=car;
+            		 break;
+            	 }
+             }
+             //update the status of car 
+             updateCar(cartype);
+             //remove from the renters list of rented cars in crms 
+             for(Renter rent: tran.getRenter_management().getRenters())
+             {
+            	 if(rent.getRentID()==lastTransaction.getRenterId())
+            	 {
+            		 rent.getRentedCars().remove(cartype);
+            	 }
+             }
+             //( lastTransaction);
+             tran.getTransactions().get(tran.getTransactions().size()-1).setStatus(true);
+            saveTransactions(tran);
+             
+		 }
+		 catch (SQLException e) {
+		        System.out.println("Error occurred while adding the transaction.");
+		        e.printStackTrace();
+		    }
+	}
 
 
 
