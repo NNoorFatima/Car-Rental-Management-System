@@ -116,10 +116,11 @@ public class JBDCssms {
 	        {
 	            boolean dbSt = rs.getBoolean("status");
 	            boolean crmsSt = car.getStatus();
+	            int crmsStInt=crmsSt?1:0;
 
 	            if (dbSt != crmsSt)
 	            {
-	                String updateSQL = "UPDATE car SET status = " + crmsSt + " WHERE carid = " + car.getID();
+	                String updateSQL = "UPDATE car SET status = " + crmsStInt + " WHERE carid = " + car.getID();
 	                stmt.executeUpdate(updateSQL);
 	                System.out.println("Updated");
 	            } 
@@ -136,13 +137,143 @@ public class JBDCssms {
 
 	//RENTERS
 	public static void saveRenters(Renter rent)
-	{}
+	{
+		String sql = "INSERT INTO renter (name, email, address, phone_no,type,total_rent_fee) VALUES ('"
+                + rent.getName() + "', '" 
+                + rent.getEmail()+ "', '" 
+                + rent.getAddress() + "', '" 
+                + rent.getPh_no()+ "','"
+                +rent.displayRenterType()+"',"
+                +rent.getTotal_rent_fee()+")";
+		try (Connection conn = DriverManager.getConnection(URL);
+        Statement stmt = conn.createStatement()) 
+		{
+			int rowsInserted = stmt.executeUpdate(sql);
+			if (rowsInserted > 0) 
+				System.out.println("A new renter was added successfully!");
+			else 
+				System.out.println("Unable to add renter");
+		}
+		catch (SQLException e) 
+		{
+			System.out.println("Error occurred while adding the renter.");
+			e.printStackTrace();
+		}
+	}
 	public static void displayRenters()
-	{}
-	public static void removeRenter()
-	{}
-	public static void updateRenter()
-	{}
+	{
+		String sql = "SELECT * FROM renter";
+
+	    try (Connection conn = DriverManager.getConnection(URL);
+	         Statement renterStmt = conn.createStatement();
+	         ResultSet renterRs = renterStmt.executeQuery(sql)) {
+
+	        while (renterRs.next()) {
+	            int id = renterRs.getInt("renterid");
+	            String name = renterRs.getString("name");
+	            String email = renterRs.getString("email");
+	            String address = renterRs.getString("address");
+	            String phone_no = renterRs.getString("phone_no");
+	            String type = renterRs.getString("type");
+	            Float total_rent_fee= renterRs.getFloat("total_rent_fee");
+	            
+	            System.out.println("ID: " + id +
+	                               "\nName: " + name +
+	                               "\nEmail: " + email +
+	                               "\nAddress: " + address +
+	                               "\nPhone_no: " + phone_no+
+	            					"\nTotal_rent_fee: "+total_rent_fee);
+
+	            // Check cars_rented
+	            String carsSql = "SELECT carid, brand FROM cars_rented WHERE renterid = " + id;
+	            try (Statement carStmt = conn.createStatement();
+	                 ResultSet carRs = carStmt.executeQuery(carsSql)) {
+
+	                if (!carRs.isBeforeFirst()) 
+	                { // If the ResultSet is empty
+	                    System.out.println("No cars rented.");
+	                } 
+	                else 
+	                {
+	                    System.out.println("Cars rented:");
+	                    while (carRs.next()) 
+	                    {
+	                        int carId = carRs.getInt("carid");
+	                        String brand = carRs.getString("brand");
+	                        System.out.println("- Car ID: " + carId + ", Brand: " + brand);
+	                    }
+	                }
+	            }
+	            System.out.println("\n");
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error occurred while retrieving Renters.");
+	        e.printStackTrace();
+	    }
+	}
+	public static void removeRenter(int id)
+	{
+		String sql = "DELETE FROM renter WHERE renterid = " + id + 
+                " AND NOT EXISTS (SELECT 1 FROM cars_rented WHERE renterid = " + id + ")";
+		 try (Connection conn = DriverManager.getConnection(URL);
+	             Statement stmt = conn.createStatement())
+		 {
+			 int Affected = stmt.executeUpdate(sql);
+			 if(Affected>0)
+				 System.out.println("Renter with id "+ id +" has been removed\n");
+			 else
+				 System.out.println("No renter with id "+ id +" was found or they have cars rented2\n");
+	     } 
+		 catch (SQLException e) {
+	            System.out.println("Error occurred while retrieving Renter.");
+	            e.printStackTrace();
+		 }
+	}
+	public static void updateRenter(Renter rent)
+	{
+		String checkRenterSQL = "SELECT COUNT(*) FROM renter WHERE renterid = " + rent.getRentID();
+
+		try (Connection conn = DriverManager.getConnection(URL);
+		     Statement checkStmt = conn.createStatement()) 
+		{
+		    ResultSet rs = checkStmt.executeQuery(checkRenterSQL);
+//		    if (rs.next() && rs.getInt(1) == 0) 
+//		    {
+//		        System.out.println("Error");
+//		        return;
+//		    }
+
+		    if (!rent.getRentedCars().isEmpty() && rent.getRentedCars() != null )
+		    {
+		        try (Statement insertStmt = conn.createStatement())
+		        {
+		            for (Car car : rent.getRentedCars())
+		            {
+		                String alreadyExisting = "SELECT COUNT(*) FROM cars_rented WHERE renterid = " + rent.getRentID() + " AND carid = " + car.getID();
+		                ResultSet carCheckRs = insertStmt.executeQuery(alreadyExisting);
+		                if (carCheckRs.next() && carCheckRs.getInt(1) > 0) 
+		                {
+		                    System.out.println("Entry for renter ID " + rent.getRentID() + 
+		                                       " and car ID " + car.getID() +
+		                                       " already exists. Skipped.");
+		                    continue;
+		                }
+		                String insertCarSQL = "INSERT INTO cars_rented (renterid, carid, brand) VALUES ("
+		                                      + rent.getRentID() + ", " + car.getID() + ", '" + car.getBrand() + "')";
+		                insertStmt.executeUpdate(insertCarSQL);
+		            }
+		            System.out.println("Updated renter ID: " + rent.getRentID());
+		        } 
+		    } 
+		} 
+		catch (SQLException e) 
+		{
+		    System.out.println("Error occurred while updating the renter.");
+		    e.printStackTrace();
+		}
+
+	}
 
 
 

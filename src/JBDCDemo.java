@@ -174,7 +174,8 @@ public class JBDCDemo {
 	        e.printStackTrace();
 	    }
 	}	
-	public static void displayRenters() {
+	public static void displayRenters() 
+	{
 	    String sql = "SELECT * FROM renter";
 
 	    try (Connection conn = DriverManager.getConnection(URL, username, password);
